@@ -1,23 +1,94 @@
 /**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ * Internal dependencies
  */
-import { __ } from '@wordpress/i18n';
+import RenderProfileIcons from "./RenderProfileIcons";
 
-/**
- * The save function defines the way in which the different attributes should
- * be combined into the final markup, which is then serialized by the block
- * editor into `post_content`.
- *
- * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#save
- *
- * @return {WPElement} Element to render.
- */
-export default function save() {
+const Save = ({ attributes }) => {
+	const {
+		profiles,
+		fontSize,
+		iconSpacing,
+		iconAlign,
+		iconColor,
+		backgroundColor,
+		borderRadius,
+		customColor,
+		iconPadding,
+		borderSize,
+		borderType,
+		borderColor,
+		hoverAnimation,
+		boxHOffset,
+		boxVOffset,
+		shadowBlur,
+		shadowSpread,
+		boxShadowColor,
+		textHOffset,
+		textVOffset,
+		shadowRadius,
+		textShadowColor,
+		profilesString,
+		containerBackground,
+		marginTop,
+		marginRight,
+		marginBottom,
+		marginLeft,
+		paddingTop,
+		paddingRight,
+		paddingBottom,
+		paddingLeft,
+		marginUnit,
+		paddingUnit,
+		fontSizeUnit,
+		iconSpacingUnit,
+		iconPaddingUnit,
+		radiusUnit
+	} = attributes;
+
+	const profileStyles = {
+		container: {
+			margin: `${marginTop || 0}${marginUnit} ${marginRight ||
+				0}${marginUnit} ${marginBottom || 0}${marginUnit} ${marginLeft ||
+				0}${marginUnit}`,
+			padding: `${paddingTop || 10}${paddingUnit} ${paddingRight ||
+				10}${paddingUnit} ${paddingBottom || 10}${paddingUnit} ${paddingLeft ||
+				10}${paddingUnit}`,
+			fontSize: `${fontSize || 32}${fontSizeUnit}`,
+			justifyContent: iconAlign,
+			background: containerBackground
+		},
+		iconWrapper: {
+			display: "flex", // ? Add this line to fix hover.css icon displacement issue
+			background: customColor ? backgroundColor : undefined,
+			color: customColor ? iconColor || "#0073aa" : undefined,
+			borderRadius: `${borderRadius || 0}${radiusUnit}`,
+			marginRight: `${iconSpacing || 8}${iconSpacingUnit}`,
+			padding: `${iconPadding || 32}${iconPaddingUnit}`,
+			border: `${borderSize || 0}px  ${borderType} ${borderColor || "#000000"}`,
+			boxShadow: `${boxHOffset || 0}px  ${boxVOffset || 0}px ${shadowBlur ||
+				0}px ${shadowSpread || 0}px ${boxShadowColor || "#000000"}`,
+			textDecoration: "none"
+		},
+		iconStyle: {
+			textShadow: `${textHOffset || 0}px ${textVOffset || 0}px ${shadowRadius ||
+				0}px ${textShadowColor || "#000000"}`
+		}
+	};
+
 	return (
-		<p>
-			{ __( 'Social – hello from the saved content!', 'create-block' ) }
-		</p>
+		<div
+			className="eb-social-container"
+			data-hover-animation={hoverAnimation}
+			data-profiles={profilesString}
+		>
+			<RenderProfileIcons
+				profiles={profiles}
+				customColor={customColor}
+				profileStyles={profileStyles}
+				hoverAnimation={hoverAnimation}
+			/>
+		</div>
 	);
-}
+};
+
+export default Save;

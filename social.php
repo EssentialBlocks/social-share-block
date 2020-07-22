@@ -35,14 +35,6 @@ function create_block_social_block_init() {
 		$script_asset['version']
 	);
 
-	$editor_css = 'build/index.css';
-	wp_register_style(
-		'create-block-social-block-editor',
-		plugins_url( $editor_css, __FILE__ ),
-		array(),
-		filemtime( "$dir/$editor_css" )
-	);
-
 	$style_css = 'build/style-index.css';
 	wp_register_style(
 		'create-block-social-block',
@@ -51,10 +43,35 @@ function create_block_social_block_init() {
 		filemtime( "$dir/$style_css" )
 	);
 
+	$fontpicker_theme = 'src/css/fonticonpicker.base-theme.react.css';
+	wp_enqueue_style(
+		'fontpicker-default-theme',
+		plugins_url( $fontpicker_theme, __FILE__),
+		array()
+	);
+
+	$fontpicker_material_theme = 'src/css/fonticonpicker.material-theme.react.css';
+	wp_enqueue_style(
+		'fontpicker-matetial-theme',
+		plugins_url( $fontpicker_material_theme, __FILE__),
+		array()
+	);
+
+	$fontawesome_css = 'src/css/font-awesome5.css';
+	wp_enqueue_style(
+		'fontawesome-frontend-css',
+		plugins_url( $fontawesome_css, __FILE__),
+		array()
+	);
+
+
 	register_block_type( 'block/social', array(
-		'editor_script' => 'create-block-social-block-editor',
-		'editor_style'  => 'create-block-social-block-editor',
-		'style'         => 'create-block-social-block',
+		'editor_script'             => 'create-block-social-block-editor',
+		'editor_style'              => 'create-block-social-block-editor',
+		'style'                     => 'create-block-social-block',
+		'fontpicker_theme'          => 'fontpicker-default-theme',
+		'fontpicker_material_theme' => 'fontpicker-material-theme',
+		'fontawesome_css'           => 'fontawesome-frontend-css',
 	) );
 }
 add_action( 'init', 'create_block_social_block_init' );

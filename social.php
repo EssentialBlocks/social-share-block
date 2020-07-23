@@ -64,14 +64,23 @@ function create_block_social_block_init() {
 		array()
 	);
 
+  $hover_css = 'src/css/hover-min.css';
+  wp_enqueue_style(
+      'essential-blocks-hover-css',
+      plugins_url($hover_css, __FILE__),
+      array('wp-editor')
+  );
 
-	register_block_type( 'block/social', array(
-		'editor_script'             => 'create-block-social-block-editor',
-		'editor_style'              => 'create-block-social-block-editor',
-		'style'                     => 'create-block-social-block',
-		'fontpicker_theme'          => 'fontpicker-default-theme',
-		'fontpicker_material_theme' => 'fontpicker-material-theme',
-		'fontawesome_css'           => 'fontawesome-frontend-css',
-	) );
+	if( ! WP_Block_Type_Registry::get_instance()->is_registered( 'essential-blocks/social' ) ) {
+    register_block_type( 'block/social', array(
+      'editor_script'             => 'create-block-social-block-editor',
+      'editor_style'              => 'create-block-social-block-editor',
+      'style'                     => 'create-block-social-block',
+      'fontpicker_theme'          => 'fontpicker-default-theme',
+      'fontpicker_material_theme' => 'fontpicker-material-theme',
+      'fontawesome_css'           => 'fontawesome-frontend-css',
+    ) );
+  }
 }
+
 add_action( 'init', 'create_block_social_block_init' );

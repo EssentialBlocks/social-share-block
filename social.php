@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:     Social
- * Description:     Example block written with ESNext standard and JSX support – build step required.
+ * Description:     Enable one-click social sharing option to grow your audience
  * Version:         0.1.0
  * Author:          The WordPress Contributors
  * License:         GPL-2.0-or-later

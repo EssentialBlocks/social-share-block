@@ -2,7 +2,7 @@
 	"name": "block/social-share-block",
 	"title": "Social",
 	"category": "widgets",
-	"description": "",
+	"description": "Enable one-click social sharing option to grow your audience",
 	"supports": {
 		"align": true
 	},

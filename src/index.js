@@ -9,7 +9,10 @@ import attributes from "./attributes";
 
 registerBlockType("block/social-share-block", {
 	title: __("Social", "block"),
-	description: __("", "block"),
+	description: __(
+		"Enable one-click social sharing option to grow your audience",
+		"block"
+	),
 	category: "widgets",
 	icon,
 	attributes,

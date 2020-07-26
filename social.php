@@ -6,7 +6,7 @@
  * Author:          The WordPress Contributors
  * License:         GPL-2.0-or-later
  * License URI:     https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:     social
+ * Text Domain:     social-share-block
  *
  * @package         block
  */
@@ -23,7 +23,7 @@ function create_block_social_block_init() {
 	$script_asset_path = "$dir/build/index.asset.php";
 	if ( ! file_exists( $script_asset_path ) ) {
 		throw new Error(
-			'You need to run `npm start` or `npm run build` for the "block/social" block first.'
+			'You need to run `npm start` or `npm run build` for the "block/social-share-block" block first.'
 		);
 	}
 	$index_js     = 'build/index.js';
@@ -72,7 +72,7 @@ function create_block_social_block_init() {
   );
 
 	if( ! WP_Block_Type_Registry::get_instance()->is_registered( 'essential-blocks/social' ) ) {
-    register_block_type( 'block/social', array(
+    register_block_type( 'block/social-share-block', array(
       'editor_script'             => 'create-block-social-block-editor',
       'editor_style'              => 'create-block-social-block-editor',
       'style'                     => 'create-block-social-block',

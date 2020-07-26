@@ -7,7 +7,7 @@ import save from "./save";
 import icon from "./icon";
 import attributes from "./attributes";
 
-registerBlockType("block/social", {
+registerBlockType("block/social-share-block", {
 	title: __("Social", "block"),
 	description: __("", "block"),
 	category: "widgets",

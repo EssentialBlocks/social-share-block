@@ -13,6 +13,9 @@ registerBlockType("block/social", {
 	category: "widgets",
 	icon,
 	attributes,
+	supports: {
+		align: true,
+	},
 	edit: Edit,
 	save,
 });

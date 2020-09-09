@@ -2,7 +2,7 @@
 /**
  * Plugin Name:     Social Share Block
  * Description:     Enable one-click social sharing option to grow your audience
- * Version:         1.0.0
+ * Version:         1.0.1
  * Author:          WPDeveloper
  * Author URI: 		https://wpdeveloper.net
  * License:         GPL-3.0-or-later

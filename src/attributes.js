@@ -1,67 +1,133 @@
+import {
+	tmbWrapMarginConst,
+	tmbWrapPaddingConst,
+} from "./constants/dimensionsConstants";
+
+import { WrpBgConst } from "./constants/backgroundsConstants";
+
+import {
+	WrpBdShadowConst,
+	prefixSocialBdShadow,
+} from "./constants/borderShadowConstants";
+
+import {
+	wrapperWidth,
+	rangeIconSize,
+	rangeIconPadding,
+	rangeIconDistance,
+	rangeIconRowGap,
+	sclDeviderPosRight,
+} from "./constants/rangeNames";
+
+import {
+	generateDimensionsAttributes,
+	generateBackgroundAttributes,
+	generateBorderShadowAttributes,
+	generateResponsiveRangeAttributes,
+} from "../util/helpers";
+
 const attributes = {
-	profiles: {
+	// the following 4 attributes is must required for responsive options and asset generation for frontend
+	// responsive control attributes ⬇
+	resOption: {
+		type: "string",
+		default: "Desktop",
+	},
+
+	// blockId attribute for making unique className and other uniqueness ⬇
+	blockId: {
+		type: "string",
+	},
+
+	//
+	blockRoot: {
+		type: "string",
+		default: "essential_block",
+	},
+
+	// blockMeta is for keeping all the styles ⬇
+	blockMeta: {
+		type: "object",
+	},
+
+	//
+
+	socialDetails: {
 		type: "array",
-		default: [],
+		default: [
+			{
+				icon: "fab fa-facebook-f",
+				link: "#",
+				isExpanded: false,
+			},
+			{
+				icon: "fab fa-twitter",
+				link: "#",
+				isExpanded: false,
+			},
+			{
+				icon: "fab fa-instagram",
+				link: "#",
+				isExpanded: false,
+			},
+			{
+				icon: "fab fa-youtube",
+				link: "#",
+				isExpanded: false,
+			},
+			{
+				icon: "fab fa-linkedin-in",
+				link: "#",
+				isExpanded: false,
+			},
+		],
 	},
-	fontSize: {
-		type: "number",
+
+	profilesOnly: {
+		type: "array",
 	},
-	iconSpacing: {
-		type: "number",
-	},
-	iconAlign: {
+
+	iconsJustify: {
 		type: "string",
-		default: "flex-start",
+		default: "center",
 	},
-	iconColor: {
+	iconsVAlign: {
 		type: "string",
+		default: "center",
 	},
-	borderRadius: {
-		type: "number",
-	},
-	backgroundColor: {
-		type: "string",
-	},
-	customColor: {
+
+	//
+	isIconsDevider: {
 		type: "boolean",
 		default: false,
 	},
-	iconShape: {
-		type: "string",
-		default: "square",
-	},
-	iconPadding: {
-		type: "number",
-	},
-	borderSize: {
-		type: "number",
-	},
-	borderType: {
-		type: "string",
-		default: "solid",
-	},
-	borderColor: {
+
+	icnsDevideColor: {
 		type: "string",
 	},
-	hoverAnimation: {
-		selector: ".eb-social-container",
-		source: "attribute",
-		attribute: "data-hover-animation",
-		default: "",
-	},
-	boxHOffset: {
+	icnSepW: {
 		type: "number",
+		default: 1,
 	},
-	boxVOffset: {
+	icnSepH: {
 		type: "number",
+		default: 30,
 	},
-	shadowBlur: {
-		type: "number",
+
+	hvIcnColor: {
+		type: "string",
 	},
-	shadowSpread: {
-		type: "number",
+	hvIcnBgc: {
+		type: "string",
 	},
-	boxShadowColor: {
+
+	//
+	icnEffect: {
+		type: "string",
+	},
+
+	//
+	textShadowColor: {
 		type: "string",
 	},
 	textHOffset: {
@@ -70,68 +136,92 @@ const attributes = {
 	textVOffset: {
 		type: "number",
 	},
-	shadowRadius: {
+	blurRadius: {
 		type: "number",
 	},
-	textShadowColor: {
-		type: "string",
-	},
-	profilesString: {
-		selector: ".eb-social-container",
-		source: "attribute",
-		attribute: "data-profiles",
-		default: "facebook-f ,twitter ,instagram ,youtube ,linkedin ",
-	},
-	containerBackground: {
-		type: "string",
-	},
-	marginTop: {
-		type: "number",
-	},
-	marginRight: {
-		type: "number",
-	},
-	marginBottom: {
-		type: "number",
-	},
-	marginLeft: {
-		type: "number",
-	},
-	paddingTop: {
-		type: "number",
-	},
-	paddingRight: {
-		type: "number",
-	},
-	paddingBottom: {
-		type: "number",
-	},
-	paddingLeft: {
-		type: "number",
-	},
-	marginUnit: {
-		type: "string",
-		default: "px",
-	},
-	paddingUnit: {
-		type: "string",
-		default: "px",
-	},
-	fontSizeUnit: {
-		type: "string",
-		default: "px",
-	},
-	iconSpacingUnit: {
-		type: "string",
-		default: "px",
-	},
-	iconPaddingUnit: {
-		type: "string",
-		default: "px",
-	},
-	radiusUnit: {
-		type: "string",
-		default: "px",
-	},
+
+	// Responsive Range Controller attributes
+
+	...generateResponsiveRangeAttributes(rangeIconSize, {
+		defaultRange: 20,
+		noUnits: true,
+	}),
+
+	...generateResponsiveRangeAttributes(rangeIconPadding, {
+		defaultRange: 1,
+		noUnits: true,
+	}),
+
+	...generateResponsiveRangeAttributes(rangeIconDistance, {
+		defaultRange: 20,
+		noUnits: true,
+	}),
+
+	...generateResponsiveRangeAttributes(rangeIconRowGap, {
+		// defaultRange: 10,
+		noUnits: true,
+	}),
+
+	...generateResponsiveRangeAttributes(wrapperWidth, {
+		defaultUnit: "%",
+		defaultRange: 100,
+	}),
+
+	...generateResponsiveRangeAttributes(sclDeviderPosRight, {
+		defaultRange: 23,
+	}),
+
+	// boxs background attributes ⬇
+	...generateBackgroundAttributes(WrpBgConst, {
+		defaultBgGradient: "linear-gradient(45deg,#7967ff,#c277f2)",
+		// noOverlayBgi: true, // if 'noOverlay : true' is given then there's no need to give 'noOverlayBgi : true'
+	}),
+
+	// ...generateBackgroundAttributes(cdBoxsBgConst, {
+	// 	// defaultFillColor: "#7967ff",
+	// 	isBgDefaultGradient: true,
+	// 	noOverlay: true,
+	// 	noMainBgi: true,
+	// 	defaultBgGradient: "linear-gradient(45deg,#7967ff,#c277f2)",
+	// 	// noOverlayBgi: true, // if 'noOverlay : true' is given then there's no need to give 'noOverlayBgi : true'
+	// }),
+
+	// boxs BorderShadow attributes ⬇
+	...generateBorderShadowAttributes(WrpBdShadowConst, {
+		// noShadow: true,
+		// noBorder: true,
+	}),
+	...generateBorderShadowAttributes(prefixSocialBdShadow, {
+		// noShadow: true,
+		bdrDefaults: {
+			top: 1,
+			bottom: 1,
+			right: 1,
+			left: 1,
+		},
+		// noBorder: true,
+	}),
+	// ...generateBorderShadowAttributes(cdBoxsBdShadowConst, {
+	// 	// bdrDefaults: {
+	// 	// 	top: 0,
+	// 	// 	bottom: 0,
+	// 	// 	right: 0,
+	// 	// 	left: 0,
+	// 	// },
+	// 	rdsDefaults: {
+	// 		top: 10,
+	// 		bottom: 10,
+	// 		right: 10,
+	// 		left: 10,
+	// 	},
+	// 	// noShadow: true,
+	// 	// noBorder: true,
+	// }),
+
+	// dimensions Control related Attributes
+
+	...generateDimensionsAttributes(tmbWrapMarginConst),
+	...generateDimensionsAttributes(tmbWrapPaddingConst),
 };
+
 export default attributes;

@@ -1,12 +1,12 @@
 {
-	"name": "social-share-block/social-share-block",
-	"title": "Social Share Block",
+	"name": "social-links-block/social-links-block",
+	"title": "Social Links Block",
 	"category": "widgets",
 	"description": "Enable one-click social sharing option to grow your audience",
 	"supports": {
 		"align": true
 	},
-	"textdomain": "social-share-block",
+	"textdomain": "social-links-block",
 	"editorScript": "file:./build/index.js",
 	"style": "file:./build/style-index.css"
 }

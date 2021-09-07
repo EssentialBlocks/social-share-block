@@ -1,24 +1,41 @@
-import { registerBlockType } from "@wordpress/blocks";
-import { __ } from "@wordpress/i18n";
+/**
+ * WordPress depencencies
+ */
+const { __ } = wp.i18n;
+const { registerBlockType } = wp.blocks;
+
+/**
+ * Internal dependencies
+ */
+import { SocialIcon } from "../util/icons";
+import Edit from "./edit";
+import Save from "./save";
+import attributes from "./attributes";
 import "./style.scss";
 
-import Edit from "./edit";
-import save from "./save";
-import icon from "./icon";
-import attributes from "./attributes";
+import example from "./example";
 
-registerBlockType("block/social-share-block", {
-	title: __("Social", "block"),
-	description: __(
-		"Enable one-click social sharing option to grow your audience",
-		"block"
-	),
-	category: "widgets",
-	icon,
+import metadata from "../block.json";
+
+const { name, category } = metadata;
+
+registerBlockType(name, {
+	title: __("Social", "essential-blocks"),
+	// description: __(
+	// 	"Enable one-click social sharing option to grow your audience"
+	// ),
+	icon: SocialIcon,
+	category,
 	attributes,
+	keywords: [
+		__("social", "essential-blocks"),
+		__("share", "essential-blocks"),
+		__("eb essential", "essential-blocks"),
+	],
+	edit: Edit,
+	save: Save,
 	supports: {
 		align: true,
 	},
-	edit: Edit,
-	save,
+	example,
 });

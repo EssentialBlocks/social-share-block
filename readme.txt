@@ -28,8 +28,8 @@ This Block is brought to you by [WPDeveloper](https://wpdeveloper.net), the team
 ## 👨‍💻 DOCUMENTATION AND SUPPORT ##
 
 - For documentation and tutorials go to our [documentation](https://essential-blocks.com/docs/)
-- To report issue and contribution visit [Github](https://github.com/EssentialBlocks/social-share-block).
-- If you have any more questions, visit our support on the [Plugin's Forum](https://wordpress.org/support/plugin/social-share-block).
+- To report issue and contribution visit [Github](https://github.com/EssentialBlocks/social-links-block).
+- If you have any more questions, visit our support on the [Plugin's Forum](https://wordpress.org/support/plugin/social-links-block).
 - For more information about features, FAQs and documentation, check out our website at [WPDeveloper](https://wpdeveloper.net/).
 
 ## 🙌 JOIN THE COMMUNITY ##
@@ -38,7 +38,7 @@ This Block is brought to you by [WPDeveloper](https://wpdeveloper.net), the team
 
 🤝 Join our [Facebook Community](https://www.facebook.com/groups/wpdeveloper.net/) & get connected with expert web creators like yourself.
 
-🧡 LOVED Social Share Block? Rate us on [WordPress Repository](https://wordpress.org/support/plugin/social-share-block/reviews/#new-post)
+🧡 LOVED Social Share Block? Rate us on [WordPress Repository](https://wordpress.org/support/plugin/social-links-block/reviews/#new-post)
 
 🔥 GET FREEBIES FOR YOUR WORDPRESS SITE
 
@@ -69,7 +69,7 @@ Visit [WPDeveloper](https://wpdeveloper.net/) to learn more about how to do bett
 3. Install in 1-click
 
 = Old Way: =
-1. Upload `social-share-block` to the `/wp-content/plugins/` directory
+1. Upload `social-links-block` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Follow the [Documentation](https://essential-blocks.com/docs/)
 

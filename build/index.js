@@ -177,7 +177,7 @@
 /*! exports provided: name, title, category, description, supports, textdomain, editorScript, style, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"social-links-block/social-links-block\",\"title\":\"Social Links Block\",\"category\":\"widgets\",\"description\":\"Enable one-click social sharing option to grow your audience\",\"supports\":{\"align\":true},\"textdomain\":\"social-links-block\",\"editorScript\":\"file:./build/index.js\",\"style\":\"file:./build/style-index.css\"}");
+module.exports = JSON.parse("{\"name\":\"social-buttons-block/social-buttons-block\",\"title\":\"Social Buttons Block\",\"category\":\"widgets\",\"description\":\"Enable one-click social sharing option to grow your audience\",\"supports\":{\"align\":true},\"textdomain\":\"social-links-block\",\"editorScript\":\"file:./build/index.js\",\"style\":\"file:./build/style-index.css\"}");
 
 /***/ }),
 

@@ -1,6 +1,6 @@
 <?php
 
-class SocialLinksBlockAdminEnqueue
+class SocialButtonsAdminEnqueues
 {
     public function __construct()
     {
@@ -42,4 +42,4 @@ class SocialLinksBlockAdminEnqueue
     }
 }
 
-new SocialLinksBlockAdminEnqueue();
+new SocialButtonsAdminEnqueues();

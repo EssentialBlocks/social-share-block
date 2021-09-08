@@ -1,15 +1,15 @@
 <?php
 /**
- * Plugin Name:     Social Links Block
+ * Plugin Name:     Social Buttons Block
  * Description:     Enable one-click social sharing option to grow your audience
  * Version:         1.0.1
  * Author:          WPDeveloper
  * Author URI: 		https://wpdeveloper.net
  * License:         GPL-3.0-or-later
  * License URI:     https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain:     social-links-block
+ * Text Domain:     social-buttons-block
  *
- * @package         social-links-block
+ * @package         social-buttons-block
  */
 
 /**
@@ -92,7 +92,7 @@ function create_block_social_block_init() {
 	);
 
 	if( ! WP_Block_Type_Registry::get_instance()->is_registered( 'essential-blocks/social' ) ) {
-    register_block_type( 'social-links-block/social-links-block', array(
+    register_block_type( 'social-buttons-block/social-buttons-block', array(
       'editor_script'             => 'create-block-social-block-editor',
       'editor_style'              => 'create-block-social-block-editor',
       'style'                     => 'create-block-social-block',

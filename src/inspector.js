@@ -2,103 +2,139 @@
  * WordPress dependencies
  */
 import { __ } from "@wordpress/i18n";
-import { InspectorControls, PanelColorSettings } from "@wordpress/block-editor";
+import { useEffect } from "@wordpress/element";
+import { InspectorControls } from "@wordpress/block-editor";
 import {
 	PanelBody,
-	RangeControl,
 	SelectControl,
 	ToggleControl,
 	BaseControl,
+	TabPanel,
 	Button,
 	ButtonGroup,
 } from "@wordpress/components";
 
+import { TITLE_TYPOGRAPHY } from "./constants/typographyPrefixConstants";
+
 /**
  * Internal dependencies
  */
-import {
-	ICON_SHAPE,
-	ICON_ALIGN,
-	BORDER_TYPES,
-	HOVER_ANIMATION,
-} from "./constants";
-import DealSocialProfiles from "../util/social-profiles/DealSocialProfiles";
-import IconList from "../util/social-profiles/IconList";
-import DimensionsControl from "../util/dimensions-control";
-import UnitControl from "../util/unit-control";
-import ColorControl from "../util/color-control";
 
-const Inspector = ({
-	attributes,
-	setAttributes,
-	onProfilesAdd,
-	getProfilesList,
-}) => {
+const {
+	ResponsiveDimensionsControl,
+	ResponsiveRangeController,
+	ColorControl,
+	BorderShadowControl,
+	BackgroundControl,
+	AdvancedControls,
+	TypographyDropdown,
+} = window.EBSocialShareControls;
+
+import ShareButtons from "./shareButtons";
+
+import objAttributes from "./attributes";
+
+import {
+	rangeIconSize,
+	rangeIconMargin,
+	rangeIconDistance,
+	rangeIconRowGap,
+	rangeIconHeight,
+	rangeIconWidth,
+	rangeFloatingWidth,
+	rangeFloatingHeight,
+} from "./constants/rangeNames";
+
+import {
+	iconsPadding,
+	tmbWrapMarginConst,
+	tmbWrapPaddingConst,
+} from "./constants/dimensionsConstants";
+
+import { WrpBgConst } from "./constants/backgroundsConstants";
+
+import {
+	WrpBdShadowConst,
+	prefixSocialBdShadow,
+} from "./constants/borderShadowConstants";
+
+import { IconsHzAligns, HOVER_EFFECT, ICON_SHAPE } from "./constants";
+
+import iconList from "./iconList";
+
+function Inspector({ attributes, setAttributes }) {
 	const {
-		profiles,
-		fontSize,
-		iconSpacing,
-		iconAlign,
-		iconColor,
-		backgroundColor,
-		borderRadius,
-		customColor,
+		resOption,
+		socialDetails,
+
+		//
+		iconsJustify,
+
+		//
+		hvIcnColor,
+		hvIcnBgc,
+
+		//
+		icnEffect,
 		iconShape,
-		iconPadding,
-		borderSize,
-		borderType,
-		borderColor,
-		hoverAnimation,
-		boxHOffset,
-		boxVOffset,
-		shadowBlur,
-		shadowSpread,
-		boxShadowColor,
-		textHOffset,
-		textVOffset,
-		shadowRadius,
-		textShadowColor,
-		profilesString,
-		containerBackground,
-		marginTop,
-		marginRight,
-		marginBottom,
-		marginLeft,
-		paddingTop,
-		paddingRight,
-		paddingBottom,
-		paddingLeft,
-		marginUnit,
-		paddingUnit,
-		fontSizeUnit,
-		iconSpacingUnit,
-		iconPaddingUnit,
-		radiusUnit,
+		showTitle,
+		isFloating,
 	} = attributes;
+	//
+	useEffect(() => {
+		const newSclDtails = socialDetails.map((item) => ({
+			...item,
+			isExpanded: false,
+		}));
+		setAttributes({ socialDetails: newSclDtails });
+	}, []);
+
+	const resRequiredProps = {
+		setAttributes,
+		resOption,
+		attributes,
+		objAttributes,
+	};
+
+	useEffect(() => {
+		onShapeChange(iconShape);
+	}, []);
 
 	const onShapeChange = (value) => {
 		switch (value) {
 			case "rounded":
 				setAttributes({
 					iconShape: value,
-					borderRadius: 10,
-					radiusUnit: "px",
+					sclBdSd_Rds_Bottom: "10",
+					sclBdSd_Rds_Left: "10",
+					sclBdSd_Rds_Right: "10",
+					sclBdSd_Rds_Top: "10",
+					sclBdSd_Rds_Unit: "px",
+					sclBdSd_Rds_isLinked: true,
 				});
 				break;
 
 			case "circular":
 				setAttributes({
 					iconShape: value,
-					borderRadius: 50,
-					radiusUnit: "%",
+					sclBdSd_Rds_Bottom: "50",
+					sclBdSd_Rds_Left: "50",
+					sclBdSd_Rds_Right: "50",
+					sclBdSd_Rds_Top: "50",
+					sclBdSd_Rds_Unit: "%",
+					sclBdSd_Rds_isLinked: true,
 				});
 				break;
 
 			case "square":
 				setAttributes({
 					iconShape: value,
-					borderRadius: 0,
-					radiusUnit: "px",
+					sclBdSd_Rds_Bottom: undefined,
+					sclBdSd_Rds_Left: undefined,
+					sclBdSd_Rds_Right: undefined,
+					sclBdSd_Rds_Top: undefined,
+					sclBdSd_Rds_Unit: "px",
+					sclBdSd_Rds_isLinked: true,
 				});
 				break;
 
@@ -109,317 +145,300 @@ const Inspector = ({
 
 	return (
 		<InspectorControls key="controls">
-			<PanelBody title={__("Social Setting")}>
-				<DealSocialProfiles
-					iconList={IconList}
-					profiles={getProfilesList()}
-					onProfileAdd={(profiles) => onProfilesAdd(profiles)}
-				/>
-			</PanelBody>
-
-			<PanelBody title={__("Icon Settings")} initialOpen={false}>
-				<BaseControl label={__("Icon Shape")}>
-					<ButtonGroup>
-						{ICON_SHAPE.map((item) => (
-							<Button
-								style={{ zIndex: 0 }} // ? Add this style to fix icon list and primary button issue
-								isLarge
-								isSecondary={iconShape !== item.value}
-								isPrimary={iconShape === item.value}
-								onClick={() => onShapeChange(item.value)}
-							>
-								{item.label}
-							</Button>
-						))}
-					</ButtonGroup>
-				</BaseControl>
-
-				<SelectControl
-					label={__("Alignment")}
-					value={iconAlign}
-					options={ICON_ALIGN}
-					onChange={(newAlign) => setAttributes({ iconAlign: newAlign })}
-				/>
-
-				<UnitControl
-					selectedUnit={fontSizeUnit}
-					unitTypes={[
-						{ label: "px", value: "px" },
-						{ label: "em", value: "em" },
-						{ label: "%", value: "%" },
-					]}
-					onClick={(fontSizeUnit) => setAttributes({ fontSizeUnit })}
-				/>
-
-				<RangeControl
-					label={__("Font Size")}
-					value={fontSize}
-					allowReset
-					onChange={(fontSize) => setAttributes({ fontSize })}
-					min={8}
-					max={100}
-				/>
-
-				<UnitControl
-					selectedUnit={iconSpacingUnit}
-					unitTypes={[
-						{ label: "px", value: "px" },
-						{ label: "em", value: "em" },
-						{ label: "%", value: "%" },
-					]}
-					onClick={(iconSpacingUnit) => setAttributes({ iconSpacingUnit })}
-				/>
-
-				<RangeControl
-					label={__("Spacing")}
-					value={iconSpacing}
-					allowReset
-					onChange={(newSize) => setAttributes({ iconSpacing: newSize })}
-					min={8}
-					max={100}
-				/>
-
-				<UnitControl
-					selectedUnit={iconPaddingUnit}
-					unitTypes={[
-						{ label: "px", value: "px" },
-						{ label: "em", value: "em" },
-						{ label: "%", value: "%" },
-					]}
-					onClick={(iconPaddingUnit) => setAttributes({ iconPaddingUnit })}
-				/>
-
-				<RangeControl
-					label={__("Icon Size")}
-					value={iconPadding}
-					allowReset
-					onChange={(newValue) => setAttributes({ iconPadding: newValue })}
-					min={0}
-					max={100}
-				/>
-
-				<ToggleControl
-					label={__("Custom Colors")}
-					checked={customColor}
-					onChange={() => setAttributes({ customColor: !customColor })}
-				/>
-			</PanelBody>
-
-			{customColor && (
-				<PanelColorSettings
-					title={__("Colors")}
-					initialOpen={false}
-					colorSettings={[
+			<div className="eb-panel-control">
+				<TabPanel
+					className="eb-parent-tab-panel"
+					activeClass="active-tab"
+					// onSelect={onSelect}
+					tabs={[
 						{
-							value: iconColor,
-							onChange: (newColor) => setAttributes({ iconColor: newColor }),
-							label: __("Icon Color"),
+							name: "general",
+							title: "General",
+							className: "eb-tab general",
 						},
 						{
-							value: backgroundColor,
-							onChange: (newColor) =>
-								setAttributes({
-									backgroundColor: newColor,
-								}),
-							label: __("Icon Background"),
+							name: "styles",
+							title: "Style",
+							className: "eb-tab styles",
 						},
 						{
-							value: containerBackground,
-							onChange: (newColor) =>
-								setAttributes({
-									containerBackground: newColor,
-								}),
-							label: __("Container Background"),
+							name: "advance",
+							title: "Advanced",
+							className: "eb-tab advance",
 						},
 					]}
-				/>
-			)}
+				>
+					{(tab) => (
+						<div className={"eb-tab-controls " + tab.name}>
+							{tab.name === "general" && (
+								<>
+									<PanelBody
+										title={__("Share Buttons", "essential-blocks")}
+										// initialOpen={false}
+									>
+										<>
+											<ToggleControl
+												label={__("Show Title", "essential-blocks")}
+												checked={showTitle}
+												onChange={() =>
+													setAttributes({
+														showTitle: !showTitle,
+													})
+												}
+											/>
+											<ToggleControl
+												label={__("Floating", "essential-blocks")}
+												checked={isFloating}
+												onChange={() =>
+													setAttributes({
+														isFloating: !isFloating,
+													})
+												}
+											/>
+											<hr />
+											<ShareButtons
+												profiles={socialDetails}
+												onProfileAdd={(socialDetails) =>
+													setAttributes({ socialDetails })
+												}
+												iconList={iconList}
+											/>
+										</>
+									</PanelBody>
+								</>
+							)}
+							{tab.name === "styles" && (
+								<>
+									<PanelBody title={__("Icons Styles", "essential-blocks")}>
+										<BaseControl label={__("Icon Shape", "essential-blocks")}>
+											<ButtonGroup>
+												{ICON_SHAPE.map((item, index) => (
+													<Button
+														key={index}
+														isSecondary={iconShape !== item.value}
+														isPrimary={iconShape === item.value}
+														onClick={() => onShapeChange(item.value)}
+													>
+														{item.label}
+													</Button>
+												))}
+											</ButtonGroup>
+										</BaseControl>
 
-			<PanelBody title={__("Border Settings")} initialOpen={false}>
-				<ColorControl
-					label={__("Border Color")}
-					color={borderColor}
-					onChange={(borderColor) => setAttributes({ borderColor })}
-				/>
+										<BaseControl
+											id="eb-team-icons-alignments"
+											label="Social Icons Horizontal Alignments"
+										>
+											<SelectControl
+												// label={__("Icons Horizontal Alignment", "essential-blocks")}
+												value={iconsJustify}
+												options={IconsHzAligns}
+												onChange={(iconsJustify) =>
+													setAttributes({ iconsJustify })
+												}
+											/>
+										</BaseControl>
 
-				<SelectControl
-					label={__("Border Type")}
-					value={borderType}
-					options={BORDER_TYPES}
-					onChange={(newStyle) => setAttributes({ borderType: newStyle })}
-				/>
+										{showTitle && (
+											<TypographyDropdown
+												baseLabel={__("Typography", "essential-blocks")}
+												typographyPrefixConstant={TITLE_TYPOGRAPHY}
+												resRequiredProps={resRequiredProps}
+											/>
+										)}
 
-				<RangeControl
-					label={__("Border Size")}
-					value={borderSize}
-					allowReset
-					onChange={(newSize) => setAttributes({ borderSize: newSize })}
-					min={0}
-					max={100}
-				/>
+										<ResponsiveRangeController
+											noUnits
+											baseLabel={__("Size", "essential-blocks")}
+											controlName={rangeIconSize}
+											resRequiredProps={resRequiredProps}
+											min={5}
+											max={300}
+											step={1}
+										/>
 
-				<UnitControl
-					selectedUnit={radiusUnit}
-					unitTypes={[
-						{ label: "px", value: "px" },
-						{ label: "%", value: "%" },
-					]}
-					onClick={(radiusUnit) => setAttributes({ radiusUnit })}
-				/>
+										{iconShape === "circular" && (
+											<>
+												<ResponsiveRangeController
+													noUnits
+													baseLabel={__("Height", "essential-blocks")}
+													controlName={rangeIconHeight}
+													resRequiredProps={resRequiredProps}
+													min={0}
+													max={800}
+													step={1}
+												/>
+												<ResponsiveRangeController
+													noUnits
+													baseLabel={__("Width", "essential-blocks")}
+													controlName={rangeIconWidth}
+													resRequiredProps={resRequiredProps}
+													min={0}
+													max={800}
+													step={1}
+												/>
+											</>
+										)}
 
-				<RangeControl
-					label={__("Border Radius")}
-					value={borderRadius}
-					allowReset
-					onChange={(newValue) => setAttributes({ borderRadius: newValue })}
-					min={0}
-					max={100}
-				/>
-			</PanelBody>
+										{isFloating && (
+											<>
+												<ResponsiveRangeController
+													noUnits
+													baseLabel={__("Floating Width", "essential-blocks")}
+													controlName={rangeFloatingWidth}
+													resRequiredProps={resRequiredProps}
+													min={0}
+													max={800}
+													step={1}
+												/>
+												<ResponsiveRangeController
+													noUnits
+													baseLabel={__("Floating Height", "essential-blocks")}
+													controlName={rangeFloatingHeight}
+													resRequiredProps={resRequiredProps}
+													min={0}
+													max={2000}
+													step={1}
+												/>
+											</>
+										)}
 
-			<PanelBody title={__("Hover")} initialOpen={false}>
-				<SelectControl
-					label={__("Hover Animation")}
-					value={hoverAnimation}
-					options={HOVER_ANIMATION}
-					onChange={(newValue) => setAttributes({ hoverAnimation: newValue })}
-				/>
-			</PanelBody>
+										<ResponsiveRangeController
+											noUnits
+											baseLabel={__("Margin", "essential-blocks")}
+											controlName={rangeIconMargin}
+											resRequiredProps={resRequiredProps}
+											min={0}
+											max={250}
+											step={1}
+										/>
 
-			<PanelBody title={__("Box Shadow")} initialOpen={false}>
-				<ColorControl
-					label={__("Shadow Color")}
-					color={boxShadowColor}
-					onChange={(boxShadowColor) => setAttributes({ boxShadowColor })}
-				/>
+										{iconShape !== "circular" && (
+											<ResponsiveDimensionsControl
+												resRequiredProps={resRequiredProps}
+												controlName={iconsPadding}
+												baseLabel="Padding"
+											/>
+										)}
+										{!isFloating && (
+											<>
+												<ResponsiveRangeController
+													noUnits
+													baseLabel={__("Spacing", "essential-blocks")}
+													controlName={rangeIconDistance}
+													resRequiredProps={resRequiredProps}
+													min={0}
+													max={100}
+													step={1}
+												/>
+												<ResponsiveRangeController
+													noUnits
+													baseLabel={__("Rows Gap", "essential-blocks")}
+													controlName={rangeIconRowGap}
+													resRequiredProps={resRequiredProps}
+													min={0}
+													max={100}
+													step={1}
+												/>
 
-				<RangeControl
-					label={__("Horizontal Offset")}
-					value={boxHOffset}
-					allowReset
-					onChange={(newValue) => setAttributes({ boxHOffset: newValue })}
-					min={0}
-					max={100}
-				/>
+												<label
+													style={{
+														display: "block",
+														margin: "-20px 0 20px",
+													}}
+												>
+													<i>
+														N.B. 'Rows Gap' is used when you have multiple rows
+														of social profiles. Normally in case of only one
+														row, it's not needed
+													</i>
+												</label>
+											</>
+										)}
 
-				<RangeControl
-					label={__("Vertical Offset")}
-					value={boxVOffset}
-					allowReset
-					onChange={(newValue) => setAttributes({ boxVOffset: newValue })}
-					min={0}
-					max={100}
-				/>
+										<ColorControl
+											label={__("Hover Color", "essential-blocks")}
+											color={hvIcnColor}
+											onChange={(hvIcnColor) => setAttributes({ hvIcnColor })}
+										/>
 
-				<RangeControl
-					label={__("Shadow Blur")}
-					value={shadowBlur}
-					allowReset
-					onChange={(newValue) => setAttributes({ shadowBlur: newValue })}
-					min={0}
-					max={100}
-				/>
+										<ColorControl
+											label={__("Hover Background", "essential-blocks")}
+											color={hvIcnBgc}
+											onChange={(hvIcnBgc) => setAttributes({ hvIcnBgc })}
+										/>
 
-				<RangeControl
-					label={__("Shadow Spread")}
-					value={shadowSpread}
-					allowReset
-					onChange={(newValue) => setAttributes({ shadowSpread: newValue })}
-					min={0}
-					max={100}
-				/>
-			</PanelBody>
+										<SelectControl
+											label={__("Icon Hover Effect", "essential-blocks")}
+											value={icnEffect}
+											options={HOVER_EFFECT}
+											onChange={(icnEffect) => {
+												setAttributes({ icnEffect });
+											}}
+										/>
+									</PanelBody>
 
-			<PanelBody title={__("Text Shadow")} initialOpen={false}>
-				<ColorControl
-					label={__("Shadow Color")}
-					color={textShadowColor}
-					onChange={(textShadowColor) => setAttributes({ textShadowColor })}
-				/>
+									<PanelBody
+										title={__("Icons Border & Box-Shadow")}
+										initialOpen={false}
+									>
+										<BorderShadowControl
+											controlName={prefixSocialBdShadow}
+											resRequiredProps={resRequiredProps}
+											// noShadow
+											// noBorder
+										/>
+									</PanelBody>
+								</>
+							)}
+							{tab.name === "advance" && (
+								<>
+									<PanelBody
+										title={__("Margin & Padding")}
+										// initialOpen={true}
+									>
+										<ResponsiveDimensionsControl
+											resRequiredProps={resRequiredProps}
+											controlName={tmbWrapMarginConst}
+											baseLabel="Margin"
+										/>
+										<ResponsiveDimensionsControl
+											resRequiredProps={resRequiredProps}
+											controlName={tmbWrapPaddingConst}
+											baseLabel="Padding"
+										/>
+									</PanelBody>
 
-				<RangeControl
-					label={__("Horizontal Offset")}
-					value={textHOffset}
-					allowReset
-					onChange={(newValue) => setAttributes({ textHOffset: newValue })}
-					min={0}
-					max={100}
-				/>
+									<PanelBody
+										title={__("Background ", "essential-blocks")}
+										initialOpen={false}
+									>
+										<BackgroundControl
+											controlName={WrpBgConst}
+											resRequiredProps={resRequiredProps}
+										/>
+									</PanelBody>
 
-				<RangeControl
-					label={__("Vertical Offset")}
-					value={textVOffset}
-					allowReset
-					onChange={(newValue) => setAttributes({ textVOffset: newValue })}
-					min={0}
-					max={100}
-				/>
+									<PanelBody title={__("Border & Shadow")} initialOpen={false}>
+										<BorderShadowControl
+											controlName={WrpBdShadowConst}
+											resRequiredProps={resRequiredProps}
+											// noShadow
+											// noBorder
+										/>
+									</PanelBody>
 
-				<RangeControl
-					label={__("Shadow Radius")}
-					value={shadowRadius}
-					allowReset
-					onChange={(newValue) => setAttributes({ shadowRadius: newValue })}
-					min={0}
-					max={100}
-				/>
-			</PanelBody>
-
-			<PanelBody title={__("Margin & Padding")} initialOpen={false}>
-				<UnitControl
-					selectedUnit={marginUnit}
-					unitTypes={[
-						{ label: "px", value: "px" },
-						{ label: "em", value: "em" },
-						{ label: "%", value: "%" },
-					]}
-					onClick={(marginUnit) => setAttributes({ marginUnit })}
-				/>
-
-				<DimensionsControl
-					label={__("Margin")}
-					top={marginTop}
-					right={marginRight}
-					bottom={marginBottom}
-					left={marginLeft}
-					onChange={({ top, right, bottom, left }) =>
-						setAttributes({
-							marginTop: top,
-							marginRight: right,
-							marginBottom: bottom,
-							marginLeft: left,
-						})
-					}
-				/>
-
-				<UnitControl
-					selectedUnit={paddingUnit}
-					unitTypes={[
-						{ label: "px", value: "px" },
-						{ label: "em", value: "em" },
-						{ label: "%", value: "%" },
-					]}
-					onClick={(paddingUnit) => setAttributes({ paddingUnit })}
-				/>
-
-				<DimensionsControl
-					label={__("Padding")}
-					top={paddingTop}
-					right={paddingRight}
-					bottom={paddingBottom}
-					left={paddingLeft}
-					onChange={({ top, right, bottom, left }) =>
-						setAttributes({
-							paddingTop: top,
-							paddingRight: right,
-							paddingBottom: bottom,
-							paddingLeft: left,
-						})
-					}
-				/>
-			</PanelBody>
+									<AdvancedControls
+										attributes={attributes}
+										setAttributes={setAttributes}
+									/>
+								</>
+							)}
+						</div>
+					)}
+				</TabPanel>
+			</div>
 		</InspectorControls>
 	);
-};
-
+}
 export default Inspector;

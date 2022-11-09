@@ -1,7 +1,7 @@
 const example = {
 	attributes: {
-		iconAlign: "space-around"
-	}
+		// endTimeStamp: Date.now() + 462878000,
+	},
 };
 
 export default example;

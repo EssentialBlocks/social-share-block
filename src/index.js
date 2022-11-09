@@ -1,24 +1,29 @@
-import { registerBlockType } from "@wordpress/blocks";
+/**
+ * WordPress dependencies
+ */
 import { __ } from "@wordpress/i18n";
+
+/**
+ * Internal dependencies
+ */
+import { SocialShareIcon } from "./icon";
+import Edit from "./edit";
+import attributes from "./attributes";
 import "./style.scss";
 
-import Edit from "./edit";
-import save from "./save";
-import icon from "./icon";
-import attributes from "./attributes";
+import example from "./example";
+import metadata from "../block.json";
+const { ebConditionalRegisterBlockType } = EBSocialShareControls;
 
-registerBlockType("block/social-share-block", {
-	title: __("Social", "block"),
-	description: __(
-		"Enable one-click social sharing option to grow your audience",
-		"block"
-	),
-	category: "widgets",
-	icon,
+ebConditionalRegisterBlockType(metadata, {
+	icon: SocialShareIcon,
 	attributes,
-	supports: {
-		align: true,
-	},
+	keywords: [
+		__("social share", "essential-blocks"),
+		__("icons", "essential-blocks"),
+		__("eb essential", "essential-blocks"),
+	],
 	edit: Edit,
-	save,
+	save: () => null,
+	example,
 });

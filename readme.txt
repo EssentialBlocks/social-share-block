@@ -1,9 +1,9 @@
 === Social Share Block ===
-Contributors: wpdevteam, re_enter_rupok, Asif2BD, alam789
+Contributors: wpdevteam, re_enter_rupok, Asif2BD, alam789, fencermonir
 Tags: gutenberg, block, blocks, editor, progress, progress bar, skill bar, responsive progress bar, animated skillbar, animated progress bar, skill-bars, percentage bar, chart bar, graph bar, gutenberg blocks
 Requires at least: 5.0
-Tested up to: 5.5
-Stable tag: 1.0.1
+Tested up to: 6.1
+Stable tag: 2.0.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -11,19 +11,28 @@ Enable one-click social sharing option to grow your audience
 
 == Description ==
 
-Enable one-click social sharing to grow your audience and brand exposure. 
-Using this **Social Share Block** plugin, you can let your visitors and readers to easily share your content in different social platforms. Without any coding, it will allow you to add social sharing options from your WordPress Block Editor.
+Share all your posts and content on popular social platforms seamlessly with one click using **Social Share** Gutenberg block.
 
-**Completely Customizable:** You can customize the social channels, size, icons etc. to make it just the way you need from Gutenberg.
+With this stunning plugin, you can add social share buttons on your post or page any place you want. In addition, you can share your posts on Facebook, Twitter, LinkedIn, Pinterest, and any other social media platform you prefer. Without any coding, you will get full control in the block’s design & customizations.
 
-**Super Light-weight:** No extra resources used and it's highly optimized for super fast loading & instant Live editing.
+**Note:** Plugin will not work on local server. You should have an online website for the plugin to function properly.
 
-**Dedicated Support:** We’ve an extraordinary support team ready to help you. Ask your questions in the support forum, we’ll get back to you immediately.
+## Why Should You Get Social Share Block: ##
+- No configuration needed
+- Direct share to chosen social platforms
+- Add as many custom platform icons as you want
+- Floating social share buttons with scrolling effect
+- Include custom shapes, alignments, hover effects, margins, padding, etc
 
+**Completely Customizable:** You can customize Social Share Block just the way you want.
+
+**Super Light-weight:** No extra resources are used and it’s highly optimized for super fast loading & instant live editing.
+
+**Dedicated Support:** We have an extraordinary support team ready to help you. Ask your questions in the support forum, we’ll get back to you immediately.
 
 ## 🚀 BACKED BY A TRUSTED TEAM ## 
 
-This Block is brought to you by [WPDeveloper](https://wpdeveloper.net), the team behind the most popular elements library [Essential Addons for Elementor](https://wordpress.org/plugins/essential-addons-for-elementor-lite/) (used by almost 700,000 happy users from 180+ countries).
+This Block is brought to you by [WPDeveloper](https://wpdeveloper.net), the team behind the most popular elements library [Essential Addons for Elementor](https://wordpress.org/plugins/essential-addons-for-elementor-lite/) (used by almost 1 million+ happy users from 180+ countries).
 
 ## 👨‍💻 DOCUMENTATION AND SUPPORT ##
 
@@ -86,6 +95,12 @@ Yes, it will work with any standard WordPress theme.
 
 == Changelog ==
 
+= 2.0.0 - dev =
+
+* Added: Social Share option
+* Added: Floating social share option
+* Added: Animation, visibility, custom option
+
 = 1.0.1 - 09-09-2020 =
 
 * Fix: Missing css, js files
@@ -97,3 +112,6 @@ Yes, it will work with any standard WordPress theme.
 
 == Upgrade Notice ==
 
+= 2.0.0 =
+
+New version of Social Share block is available from version 2.0.0. Updating to the new version will break existing functionality & have to create the section from scratch with updated version.

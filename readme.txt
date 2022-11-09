@@ -95,7 +95,7 @@ Yes, it will work with any standard WordPress theme.
 
 == Changelog ==
 
-= 2.0.0 - dev =
+= 2.0.0 - 09/11/2022 =
 
 * Added: Social Share option
 * Added: Floating social share option

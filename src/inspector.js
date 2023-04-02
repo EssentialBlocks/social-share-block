@@ -12,6 +12,7 @@ import {
 	TabPanel,
 	Button,
 	ButtonGroup,
+	__experimentalDivider as Divider,
 } from "@wordpress/components";
 
 import { TITLE_TYPOGRAPHY } from "./constants/typographyPrefixConstants";
@@ -195,11 +196,13 @@ function Inspector({ attributes, setAttributes }) {
 													})
 												}
 											/>
-											<hr />
+											<Divider />
 											<ShareButtons
 												profiles={socialDetails}
 												onProfileAdd={(socialDetails) =>
-													setAttributes({ socialDetails })
+													setAttributes({
+														socialDetails,
+													})
 												}
 												iconList={iconList}
 											/>
@@ -234,7 +237,9 @@ function Inspector({ attributes, setAttributes }) {
 												value={iconsJustify}
 												options={IconsHzAligns}
 												onChange={(iconsJustify) =>
-													setAttributes({ iconsJustify })
+													setAttributes({
+														iconsJustify,
+													})
 												}
 											/>
 										</BaseControl>

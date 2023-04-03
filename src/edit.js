@@ -362,19 +362,19 @@ export default function Edit({
 				? `
 				.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:nth-child(${
 						i + 1
-				  }) a .social-icon-v-line {			
+				  }) a .social-icon-v-line {
 					background-color: ${separatorColor};
 				}
 				`
 				: ""
 		}
-		
+
 		${
 			backgroundColor || color
 				? `
 				.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:nth-child(${
 						i + 1
-				  }) a {			
+				  }) a {
 					${backgroundColor ? `background: ${backgroundColor};` : ""}
 					${color ? `color: ${color};` : ""}
 				}
@@ -416,19 +416,19 @@ export default function Edit({
 		${wrpHoverBackgroundStylesDesktop}
 		${!isFloating ? wrpBdShdStylesHoverDesktop : ""}
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:before{
 		${wrpOverlayStylesDesktop}
 		transition: ${wrpOvlTransitionStyle};
 
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:hover:before{
 		${wrpHoverOverlayStylesDesktop}
 
 	}
-	
-	
+
+
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares {
 		list-style: none;
 		flex-wrap: wrap;
@@ -460,14 +460,14 @@ export default function Edit({
 			right: 100%;
 			${sSepPosRightDesktop}
 		}
-		
+
 		`
 			: ""
 	}
 
 
 
-	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a {			
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a {
 		box-sizing:border-box;
 		text-decoration: none;
 		cursor: pointer;
@@ -533,6 +533,16 @@ export default function Edit({
 		text-align: center;
 	}
 
+    ${
+			!showTitle
+				? `.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		width: ${iconSizeDesktop};
+        height: ${iconSizeDesktop};
+		text-align: center;
+	}`
+				: ""
+		}
+
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a {
 		display: inline-flex;
 	}
@@ -545,8 +555,8 @@ export default function Edit({
 				: "100px"
 		};
 	}
-	
-	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {	
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {
 		background:${hvIcnBgc};
 		color:${hvIcnColor};
 		${socialBdrShdwsHoverDesktop}
@@ -586,18 +596,18 @@ export default function Edit({
 		${wrpPaddingTab}
 		${wrpBdShdStyesTab}
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:hover{
 		${wrpHoverBackgroundStylesTab}
 		${wrpBdShdStylesHoverTab}
-		
+
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:before{
 		${wrpOverlayStylesTab}
 
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:hover:before{
 		${wrpHoverOverlayStylesTab}
 
@@ -606,7 +616,7 @@ export default function Edit({
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares {
 		${iconSpaceTab}
 		${iconRowGapTab}
-	}	
+	}
 
 	${
 		isIconsDevider
@@ -644,10 +654,20 @@ export default function Edit({
 		${iconShape === "circular" && iconHeightTab ? `height: ${iconHeightTab};` : ""}
 		${iconShape === "circular" && iconWidthTab ? `width: ${iconWidthTab};` : ""}
 	}
-	
-	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {	
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {
 		${socialBdrShdwsHoverTab}
 	}
+
+    ${
+			!showTitle
+				? `.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		width: ${iconSizeTab};
+        height: ${iconSizeTab};
+		text-align: center;
+	}`
+				: ""
+		}
 
 	`;
 
@@ -658,18 +678,18 @@ export default function Edit({
 		${wrpPaddingMobile}
 		${wrpBdShdStyesMobile}
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:hover{
 		${wrpHoverBackgroundStylesMobile}
 		${wrpBdShdStylesHoverMobile}
-		
+
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:before{
 		${wrpOverlayStylesMobile}
 
 	}
-	
+
 	.${blockId}.eb-social-share-wrapper:hover:before{
 		${wrpHoverOverlayStylesMobile}
 
@@ -710,7 +730,7 @@ export default function Edit({
 				: "100px"
 		};
 	}
-		
+
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a {
 		${showTitle ? titleTypographyMobile : `font-size: ${iconSizeMobile};`}
 		${iconShape !== "circular" ? iconPaddingMobile : ""}
@@ -728,15 +748,25 @@ export default function Edit({
 		}
 	}
 
-	
-	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {	
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {
 		${socialBdrShdwsHoverMobile}
 	}
+
+    ${
+			!showTitle
+				? `.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		width: ${iconSizeMobile};
+        height: ${iconSizeMobile};
+		text-align: center;
+	}`
+				: ""
+		}
 
 	`;
 
 	// all css styles for large screen width (desktop/laptop) in strings ⬇
-	const desktopAllStyles = softMinifyCssStrings(`		
+	const desktopAllStyles = softMinifyCssStrings(`
 		${wrapperStylesDesktop}
 	`);
 
@@ -783,20 +813,20 @@ export default function Edit({
 
 				/* mimmikcssEnd */
 
-				@media all and (max-width: 1024px) {	
+				@media all and (max-width: 1024px) {
 
-					/* tabcssStart */			
+					/* tabcssStart */
 					${softMinifyCssStrings(tabAllStyles)}
-					/* tabcssEnd */			
-				
+					/* tabcssEnd */
+
 				}
-				
+
 				@media all and (max-width: 767px) {
-					
-					/* mobcssStart */			
+
+					/* mobcssStart */
 					${softMinifyCssStrings(mobileAllStyles)}
-					/* mobcssEnd */			
-				
+					/* mobcssEnd */
+
 				}
 				`}
 				</style>

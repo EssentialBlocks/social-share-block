@@ -71,10 +71,19 @@ class Social_Share_Helper
                 ));
             }
 
+			wp_register_style(
+				'essential-blocks-iconpicker-css',
+				SOCIAL_SHARE_BLOCKS_ADMIN_URL . 'dist/style-modules.css',
+				[],
+				SOCIAL_SHARE_BLOCKS_ADMIN_URL,
+				'all'
+			);
+
+
             wp_enqueue_style(
                 'essential-blocks-editor-css',
                 SOCIAL_SHARE_BLOCKS_ADMIN_URL . 'dist/modules.css',
-                array(),
+                array('essential-blocks-iconpicker-css','fontawesome-frontend-css'),
                 $controls_dependencies['version'],
                 'all'
             );

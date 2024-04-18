@@ -6,6 +6,5 @@
 	"supports": {
 		"align": true
 	},
-	"textdomain": "social-share-block",
-	"editorScript": "file:./dist/index.js"
+	"textdomain": "social-share-block"
 }

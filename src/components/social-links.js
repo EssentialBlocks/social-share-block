@@ -1,4 +1,4 @@
-// const { EBDisplayIcon } = window.EBSocialShareControls;
+const { EBDisplayIcon } = window.EBSocialShareControls;
 export default function socialLinks({ profilesOnly, icnEffect, showTitle }) {
 	return (
 		<ul className="eb-social-shares">
@@ -11,7 +11,7 @@ export default function socialLinks({ profilesOnly, icnEffect, showTitle }) {
 						target={linkOpenNewTab ? "_blank" : "_self"}
 						rel="noopener"
 					>
-						{/* <EBDisplayIcon className={`hvr-icon eb-social-share-icon`} icon={icon} /> */}
+						<EBDisplayIcon className={`hvr-icon eb-social-share-icon`} icon={icon} />
 						{showTitle && iconText && (
 							<>
 								<span className="eb-social-share-text">{iconText}</span>

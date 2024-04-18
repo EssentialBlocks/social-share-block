@@ -46,11 +46,11 @@ class Social_Share_Helper
          */
         if ($hook == 'post-new.php' || $hook == 'post.php' || $hook == 'site-editor.php' || ($pagenow == 'themes.php' && !empty($_SERVER['QUERY_STRING']) && str_contains($_SERVER['QUERY_STRING'], 'gutenberg-edit-site'))) {
 
-            $controls_dependencies = include_once SOCIAL_SHARE_BLOCKS_ADMIN_PATH . '/dist/controls.asset.php';
+            $controls_dependencies = include_once SOCIAL_SHARE_BLOCKS_ADMIN_PATH . '/dist/modules.asset.php';
 
             wp_register_script(
                 "eb-social-share-blocks-controls-util",
-                SOCIAL_SHARE_BLOCKS_ADMIN_URL . 'dist/controls.js',
+                SOCIAL_SHARE_BLOCKS_ADMIN_URL . 'dist/modules.js',
                 $controls_dependencies['dependencies'],
                 $controls_dependencies['version'],
                 true
@@ -73,7 +73,7 @@ class Social_Share_Helper
 
             wp_enqueue_style(
                 'essential-blocks-editor-css',
-                SOCIAL_SHARE_BLOCKS_ADMIN_URL . 'dist/controls.css',
+                SOCIAL_SHARE_BLOCKS_ADMIN_URL . 'dist/modules.css',
                 array(),
                 $controls_dependencies['version'],
                 'all'

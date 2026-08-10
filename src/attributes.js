@@ -21,6 +21,7 @@ import {
     rangeIconHeight,
     rangeIconWidth,
     rangeFloatingWidth,
+    rangeFloatingHeight,
 } from "./constants/rangeNames";
 
 import * as typographyObjs from "./constants/typographyPrefixConstants";
@@ -162,6 +163,16 @@ const attributes = {
 
     ...generateResponsiveRangeAttributes(rangeFloatingWidth, {
         defaultRange: 100,
+        noUnits: true,
+    }),
+
+    /**
+     * The inspector has always rendered a "Floating Height" control and style.js has always
+     * read it, but these attributes were never registered — so the value could not persist
+     * and the generated CSS always fell back to its hardcoded cap. Left with no defaultRange
+     * on purpose: unset means "size to the viewport" rather than a fixed pixel height.
+     */
+    ...generateResponsiveRangeAttributes(rangeFloatingHeight, {
         noUnits: true,
     }),
 

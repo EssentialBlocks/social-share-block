@@ -64,6 +64,16 @@ export default function Style(props) {
     // styling codes start from here
     //
 
+    /**
+     * "Size" (Style tab). Applied as `font-size` straight onto `.eb-social-share-icon` at
+     * every breakpoint, unconditionally — the icons are icon-font glyphs, so font-size is
+     * what scales them.
+     *
+     * It used to reach the icon only via `li a`, and only on the `!showTitle` branch, so with
+     * titles on (the default) the control did nothing at all. Titles are still sized by the
+     * Title typography control on `li a`; setting font-size directly on the icon keeps the
+     * two independent instead of letting the label's typography drive the glyph.
+     */
     const {
         rangeStylesDesktop: iconSizeDesktop,
         rangeStylesTab: iconSizeTab,
@@ -119,6 +129,14 @@ export default function Style(props) {
         attributes,
     });
 
+    /**
+     * Floating Height. When unset these come back empty and the floating list falls back to
+     * `calc(65vh + 50px)` below — the list is fixed at top:35% shifted up 50px, so that is
+     * exactly the room between its top edge and the bottom of the viewport. Every configured
+     * item stays visible, and it still scrolls rather than running off-screen once the list
+     * genuinely outgrows the viewport. The old hardcoded 200px fallback clipped everything
+     * past roughly three items, with the scrollbar hidden so there was no sign of it.
+     */
     const {
         rangeStylesDesktop: floatingHeightDesktop,
         rangeStylesTab: floatingHeightTab,
@@ -300,7 +318,7 @@ export default function Style(props) {
 
 	${isFloating
             ? `
-	.eb-parent-wrapper.eb-parent-eb-social-share-qier2p8.eb_animation.eb__animated {
+	.eb-parent-wrapper.eb-parent-${blockId}.eb_animation.eb__animated {
 		animation-name: none !important;
 		-webkit-animation-name: none !important;
 	}
@@ -411,7 +429,7 @@ export default function Style(props) {
 		max-height: ${typeof floatingHeightDesktop === "string" &&
             floatingHeightDesktop.length !== 0
             ? floatingHeightDesktop
-            : "200px"
+            : "calc(65vh + 50px)"
         };
 		${isFloating ? wrpBackgroundStylesDesktop : ""}
 		${isFloating ? wrpBdShdStyesDesktop : ""}
@@ -431,6 +449,10 @@ export default function Style(props) {
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a .eb-social-share-icon {
 		width: ${iconSizeDesktop};
 		text-align: center;
+	}
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		font-size: ${iconSizeDesktop};
 	}
 
     ${!showTitle
@@ -529,7 +551,7 @@ export default function Style(props) {
 		max-height: ${typeof floatingHeightTab === "string" &&
             floatingHeightTab.length !== 0
             ? floatingHeightTab
-            : "200px"
+            : "calc(65vh + 50px)"
         };
 		${isFloating ? wrpBackgroundStylesTab : ""}
 		${isFloating ? wrpBdShdStyesTab : ""}
@@ -554,6 +576,10 @@ export default function Style(props) {
 
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {
 		${socialBdrShdwsHoverTab}
+	}
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		font-size: ${iconSizeTab};
 	}
 
     ${!showTitle
@@ -610,7 +636,7 @@ export default function Style(props) {
 		max-height: ${typeof floatingHeightMobile === "string" &&
             floatingHeightMobile.length !== 0
             ? floatingHeightMobile
-            : "200px"
+            : "calc(65vh + 50px)"
         };
 		${isFloating ? wrpBackgroundStylesMobile : ""}
 		${isFloating ? wrpBdShdStyesMobile : ""}
@@ -642,6 +668,10 @@ export default function Style(props) {
 
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {
 		${socialBdrShdwsHoverMobile}
+	}
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		font-size: ${iconSizeMobile};
 	}
 
     ${!showTitle

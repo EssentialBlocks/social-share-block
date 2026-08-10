@@ -9,6 +9,7 @@ import { __ } from "@wordpress/i18n";
 import { SocialShareIcon } from "./icon";
 import Edit from "./edit";
 import attributes from "./attributes";
+import example from "./example";
 import "./style.scss";
 
 import metadata from "../block.json";
@@ -24,9 +25,8 @@ ebConditionalRegisterBlockType(metadata, {
     ],
     edit: Edit,
     save: () => null,
-    example: {
-        attributes: {
-            cover: `${EssentialBlocksLocalize?.image_url}/block-preview/social-share.jpg`,
-        },
-    },
+    // Renders the real block as the inserter preview. The previous inline `example` pointed
+    // `cover` at a block-preview image this plugin does not ship, which resolved to
+    // "undefined/block-preview/social-share.jpg" and showed a broken image instead.
+    example,
 });

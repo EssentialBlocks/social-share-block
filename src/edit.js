@@ -4,18 +4,17 @@
 import { __ } from "@wordpress/i18n";
 import { useEffect } from "@wordpress/element";
 import { useBlockProps } from "@wordpress/block-editor";
+import { select } from "@wordpress/data";
 
 /**
  * Internal dependencies
  */
 
 import SocialLinks from "./components/social-links";
-import blockAttributes from "./attributes";
 
 const {
 	duplicateBlockIdFix,
-	EBDisplayIcon,
-	withBlockContext
+	EBDisplayIcon
 } = window.EBSocialShareControls;
 
 import classnames from "classnames";
@@ -100,14 +99,21 @@ function Edit(props) {
 
 	// this useEffect is for creating a unique blockId for each block's unique className
 	useEffect(() => {
-		// The key must be `blockPrefix`. `duplicateBlockIdFix` renamed this parameter from
-		// `BLOCK_PREFIX` and this call site was never updated, so the helper read `undefined`
-		// and every block was assigned the id "undefined-<random>" — which then landed in the
-		// markup, the generated CSS selectors and the saved post content.
+		/**
+		 * `duplicateBlockIdFix` in the pinned controls build takes `BLOCK_PREFIX` (not
+		 * `blockPrefix`) and finds duplicates through `select("core/block-editor").getBlocks()`,
+		 * so it needs the store's `select` handed to it. Miss either one and the block dies on
+		 * mount: without `select` the helper calls `undefined("core/block-editor")` inside this
+		 * effect, which surfaces as "This block has encountered an error and cannot be
+		 * previewed."; without `BLOCK_PREFIX` every block is assigned the id
+		 * "undefined-<random>", which then lands in the markup, the generated CSS selectors and
+		 * the saved post content.
+		 */
 		duplicateBlockIdFix({
-			blockPrefix: "eb-social-share",
+			BLOCK_PREFIX: "eb-social-share",
 			blockId,
 			setAttributes,
+			select,
 			clientId,
 		});
 	}, []);
@@ -153,19 +159,4 @@ function Edit(props) {
 	);
 }
 
-/**
- * The controls in the Inspector are context-driven: `ResponsiveRangeController`,
- * `ResponsiveDimensionsControl`, `ColorControl`, `TypographyDropdown`,
- * `BorderShadowControl`, `BackgroundControl` and `AdvancedControls` all read through
- * `useBlockAttributes()` and write through `useBlockSetAttributes()`. Neither hook takes a
- * prop -- they read a React context that only this HOC provides.
- *
- * Without it `useBlockSetAttributes()` resolves to DEFAULT_SET_ATTRIBUTES_CONTEXT, which is
- * `() => {}`, so every slider and colour swatch in the Style tab moved on screen and threw
- * the value away. The `resRequiredProps` object the Inspector still passes is the older API
- * these controls no longer accept, and was silently ignored.
- *
- * The argument is the registered attribute definitions: controls read
- * `objAttributes[name].default` through `useBlockDefaultAttributes()` to implement "reset".
- */
-export default withBlockContext(blockAttributes)(Edit);
+export default Edit;

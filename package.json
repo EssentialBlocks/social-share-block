@@ -5,6 +5,9 @@
 	"author": "WPDeveloper",
 	"license": "GPL-2.0-or-later",
 	"main": "Gruntfile.js",
+	"browserslist": [
+		"extends @wordpress/browserslist-config"
+	],
 	"scripts": {
 		"build": "wp-scripts build",
 		"format:js": "wp-scripts format-js",

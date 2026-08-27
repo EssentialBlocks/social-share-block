@@ -8,15 +8,16 @@ document.addEventListener("DOMContentLoaded", function (event) {
 	socialShareLinks.forEach(function (socialShareLink) {
 		const links = socialShareLink.querySelectorAll("ul.eb-social-shares li a");
 		for (let i = 0; i < links.length; i++) {
-			links[i].addEventListener("click", function (e) {
-				e.preventDefault();
-				let link = this.getAttribute("href");
-				window.open(
-					link,
-					"",
-					" scrollbars=yes,menubar=no,width=500,height=400,resizable=yes,toolbar=no,location=no,status=no"
-				);
-			});
+			/**
+			 * No click handler on purpose.
+			 *
+			 * This used to call `e.preventDefault()` and force every href through
+			 * `window.open(link, "", "width=500,height=400,...")`, which is what produced
+			 * the small detached browser window -- and it did so for every icon, so the
+			 * per-item "Open in new tab" setting could never take effect. Navigation is
+			 * now left to the anchor itself: the render callback emits `target="_blank"`
+			 * or `target="_self"` from that setting, which is all the browser needs.
+			 */
 
 			links[i].addEventListener("mouseenter", function (e) {
 				e.preventDefault();

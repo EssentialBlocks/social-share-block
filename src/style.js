@@ -310,6 +310,23 @@ export default function Style(props) {
         ""
     );
 
+    /**
+     * Floating-bar notes (all three breakpoints below follow the same rules):
+     *
+     * z-index — the bar is `position: fixed` but carried no stacking order, so it painted in
+     * document order against every other positioned element on the page. Twenty Twenty-Five's
+     * footer group (position: relative, z-index: auto, later in the DOM) covered the bar
+     * outright and swallowed the pointer, so "mouseenter" never fired on the icons and no
+     * label ever slid out. 999 sits above ordinary theme content and below the admin bar
+     * (99999) and typical modal/consent overlays.
+     *
+     * Label sizing — the hover label is sized by its own content and revealed by animating
+     * max-width, not width. Collapsing to `width: 0` and re-opening to a fixed pixel width
+     * clipped every label longer than that width, and the ":before" separator eats a further
+     * 21px of it, so "Facebook" and "WhatsApp" were cut off mid-word. max-width still
+     * animates, while `width: max-content` keeps the drawer exactly as wide as its text.
+     * "Floating Width" therefore acts as a cap rather than a forced width.
+     */
     const wrapperStylesDesktop = `
 	div.eb-social-share-wrapper ul {
 		margin: 0;
@@ -420,6 +437,7 @@ export default function Style(props) {
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares {
 		display: inline-block;
 		position: fixed;
+		z-index: 999;
 		left: 0;
 		top: 35%;
 		transform: translate(0, -50px);
@@ -440,7 +458,8 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares .eb-social-share-text {
-		width: 0;
+		width: max-content;
+		max-width: 0;
 		overflow: hidden;
 		white-space: nowrap;
 		transition: all 0.4s;
@@ -469,10 +488,10 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
-		width: ${typeof floatingWidthDesktop === "string" &&
+		max-width: ${typeof floatingWidthDesktop === "string" &&
             floatingWidthDesktop.length !== 0
             ? floatingWidthDesktop
-            : "100px"
+            : "300px"
         };
 	}
 
@@ -558,10 +577,10 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
-		width: ${typeof floatingWidthTab === "string" &&
+		max-width: ${typeof floatingWidthTab === "string" &&
             floatingWidthTab.length !== 0
             ? floatingWidthTab
-            : "100px"
+            : "300px"
         };
 	}
 
@@ -643,10 +662,10 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
-		width: ${typeof floatingWidthMobile === "string" &&
+		max-width: ${typeof floatingWidthMobile === "string" &&
             floatingWidthMobile.length !== 0
             ? floatingWidthMobile
-            : "100px"
+            : "300px"
         };
 	}
 

@@ -3,7 +3,7 @@
     /**
      * Plugin Name:     Social Share Block
      * Description:     Share your posts & pages instantly on popular social platforms in one click from your website.
-     * Version:         2.5.0
+     * Version:         2.1.0
      * Author:          WPDeveloper
      * Author URI:         https://wpdeveloper.net
      * License:         GPL-3.0-or-later
@@ -11,7 +11,7 @@
      * Text Domain:     social-share-block
      * Requires at least: 6.0
      * Requires PHP:   7.4
-     * Tested up to:   7.0
+     * Tested up to:   7.1
      *
      * @package         social-share-block
      */
@@ -62,7 +62,7 @@
     function create_block_social_share_block_init() {
 
         if ( ! defined( 'SOCIAL_SHARE_BLOCKS_VERSION' ) ) {
-            define( 'SOCIAL_SHARE_BLOCKS_VERSION', "2.5.0" );
+            define( 'SOCIAL_SHARE_BLOCKS_VERSION', "2.1.0" );
         }
         if ( ! defined( 'SOCIAL_SHARE_BLOCKS_ADMIN_URL' ) ) {
             define( 'SOCIAL_SHARE_BLOCKS_ADMIN_URL', plugin_dir_url( __FILE__ ) );
@@ -175,9 +175,21 @@
             true
         );
 
-        if ( ! WP_Block_Type_Registry::get_instance()->is_registered( 'essential-blocks/social-share' ) ) {
+        /**
+         * Idempotency guard for the block this plugin owns.
+         *
+         * It used to test `essential-blocks/social-share`, a name this plugin never registers.
+         * That check could never match its own block, and when Essential Blocks was active it
+         * matched *their* block and skipped registration entirely — stranding every
+         * `social-share-block/social-share` already saved in post content as an unsupported
+         * block. Guard on the name actually registered below, kept in one variable so the two
+         * cannot drift apart again.
+         */
+        $block_name = 'social-share-block/social-share';
+
+        if ( ! WP_Block_Type_Registry::get_instance()->is_registered( $block_name ) ) {
             register_block_type(
-                Social_Share_Helper::get_block_register_path( 'social-share-block/social-share', SOCIAL_SHARE_BLOCKS_ADMIN_PATH ),
+                Social_Share_Helper::get_block_register_path( $block_name, SOCIAL_SHARE_BLOCKS_ADMIN_PATH ),
                 [
                     'editor_script'   => 'eb-social-share-block-editor',
                     'editor_style'    => 'eb-social-share-block-editor-style',
@@ -229,11 +241,71 @@
                                 $matches     = [];
                                 preg_match( '/fa-([\w\-]+)/', $profileIcon, $matches );
                                 $iconClass = is_array( $matches ) && ! empty( $matches[1] ) ? $matches[1] . '-original' : '';
+
+                                /**
+                                 * An override link entered on the item wins; otherwise fall back to
+                                 * the generated share URL for the current post, which is what this
+                                 * block did for every item before the field existed.
+                                 *
+                                 * Escape first, then decide. `esc_url()` empties anything outside
+                                 * `wp_allowed_protocols()`, so a `javascript:` value must be treated
+                                 * as "no override" and fall back to the share URL rather than leave
+                                 * a dead anchor behind. `esc_url()` is idempotent, so the escaped
+                                 * value is safe to echo directly below.
+                                 *
+                                 * `is_string()` guard, not a `(string)` cast: `profilesOnly` reaches
+                                 * PHP straight from post content with no server-side schema (see
+                                 * WP_Block_Type::prepare_attributes_for_render(), which skips
+                                 * undeclared attributes), so a hand-edited `"link": []` would raise
+                                 * "Array to string conversion". Same guard style as
+                                 * Social_Share_Helper::eb_social_share_name_link().
+                                 */
+                                $customLink = isset( $profile['link'] ) && is_string( $profile['link'] )
+                                    ? esc_url( trim( $profile['link'] ) )
+                                    : '';
+                                $isCustom = '' !== $customLink;
+                                $href     = $isCustom
+                                    ? $customLink
+                                    : esc_url( Social_Share_Helper::eb_social_share_name_link( $post_id, $profileIcon ) );
+
+                                /**
+                                 * `linkOpenNewTab` defaults to true when the key is absent: items
+                                 * saved before the toggle existed were rendered with a hardcoded
+                                 * target="_blank" and must stay that way.
+                                 *
+                                 * The target is the only thing that decides where the link opens --
+                                 * there is deliberately no click handler on the frontend any more.
+                                 */
+                                $openNewTab = isset( $profile['linkOpenNewTab'] ) ? (bool) $profile['linkOpenNewTab'] : true;
+
+                                /**
+                                 * nofollow belongs on a share endpoint, not on the author's own
+                                 * destination. `noopener noreferrer` only earns its place on a new
+                                 * tab: on a same-tab navigation there is no opener to sever, and
+                                 * `noreferrer` would strip the Referer header and blank the site
+                                 * owner's own referral analytics for their own link.
+                                 */
+                                if ( ! $isCustom ) {
+                                    $linkRel = 'nofollow noopener noreferrer';
+                                } elseif ( $openNewTab ) {
+                                    $linkRel = 'noopener noreferrer';
+                                } else {
+                                    $linkRel = '';
+                                }
                             ?>
                 <li>
                     <a class="<?php echo esc_attr( $iconClass ); ?><?php echo " " . esc_attr( $iconEffect ); ?>"
-                        href="<?php echo esc_url( Social_Share_Helper::eb_social_share_name_link( $post_id, $profileIcon ) ); ?>"
-                        target="_blank" rel="nofollow noopener noreferrer">
+                        <?php
+                            // An unmapped platform with no override has nowhere to go; emitting
+                            // href="" would reload the current page on click.
+                            if ( '' !== $href ) {
+                                echo 'href="' . $href . '" '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url() applied above.
+                            }
+                            echo 'target="' . ( $openNewTab ? '_blank' : '_self' ) . '"';
+                            if ( '' !== $linkRel ) {
+                                echo ' rel="' . esc_attr( $linkRel ) . '"';
+                            }
+                        ?>>
                         <i
                             class="hvr-icon eb-social-share-icon								                                        <?php echo esc_attr( $profileIcon ); ?>"></i>
                         <?php

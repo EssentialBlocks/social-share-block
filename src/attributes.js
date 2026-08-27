@@ -161,8 +161,17 @@ const attributes = {
         noUnits: true,
     }),
 
+    /**
+     * "Floating Width" is now the maximum the hover label may open to, not a forced width:
+     * style.js pairs it with `width: max-content`, so a short label renders at its own width
+     * and only a label longer than this value is clipped. The old default of 100 was below
+     * what the block's own default labels need (WhatsApp needs 125px at the default type
+     * scale, and the separator pseudo-element accounts for 21px of that), so every longer
+     * name was cut off. 300 clears the built-in platform names across the block's usable
+     * font-size range while staying well inside the control's 0-800 range.
+     */
     ...generateResponsiveRangeAttributes(rangeFloatingWidth, {
-        defaultRange: 100,
+        defaultRange: 300,
         noUnits: true,
     }),
 

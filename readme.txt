@@ -1,5 +1,5 @@
 === Social Share Block ===
-Contributors: wpdevteam, re_enter_rupok, Asif2BD, alam789, fencermonir, RahatSheikhLeon
+Contributors: wpdevteam, re_enter_rupok, Asif2BD, alam789, RahatSheikhLeon
 Tags: gutenberg, block, blocks, editor, progress, progress bar, skill bar, responsive progress bar, animated skillbar, animated progress bar, skill-bars, percentage bar, chart bar, graph bar, gutenberg blocks
 Requires at least: 6.0
 Tested up to: 7.1

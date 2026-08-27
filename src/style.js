@@ -282,14 +282,30 @@ export default function Style(props) {
 
     // styles related to generateBorderShadowStyles end
 
+    /**
+     * Per-item overrides for the shared divider colour.
+     *
+     * The divider is not an element -- it is the `:before` pseudo-element that the block-level
+     * `isIconsDevider` rule below draws on every `li` that follows another one. This used to
+     * target `a .social-icon-v-line`, a class that is not emitted by the editor preview
+     * (src/components/social-links.js) or by the PHP render callback, so the rule matched
+     * nothing and the Separator Color control had no effect anywhere.
+     *
+     * `li + li:nth-child(i + 2)` is the divider drawn immediately after item `i`, which is how
+     * the control reads next to that item's own Icon/Background colours. The `li + li` prefix
+     * makes it self-limiting: the first item has no divider before it, and the last item's
+     * value simply matches nothing. It also raises specificity above the block-level rule
+     * (0,4,4 vs 0,3,4), so the per-item colour wins regardless of the order the two are
+     * emitted in.
+     */
     const socialStyles = socialDetails.reduce(
         (acc, { backgroundColor, color, separatorColor }, i) => `
 		${acc}
 
 		${separatorColor
                 ? `
-				.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:nth-child(${i + 1
-                }) a .social-icon-v-line {
+				.${blockId}.eb-social-share-wrapper ul.eb-social-shares li + li:nth-child(${i + 2
+                }):before {
 					background-color: ${separatorColor};
 				}
 				`

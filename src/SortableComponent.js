@@ -1,14 +1,50 @@
 import React from "react";
+/**
+ * Drag and drop is provided by @dnd-kit.
+ *
+ * This list used to be built on `react-sortable-hoc`, which was abandoned in 2022 and
+ * positions its items through `ReactDOM.findDOMNode` -- an API React removes in 19. Its
+ * declared peer range (`react ^16 || ^17`) also conflicted with the React 18 that WordPress
+ * ships, which is why the repo carried a `legacy-peer-deps` npm workaround just to install.
+ *
+ * @dnd-kit is hooks-based, needs no `findDOMNode`, and its peer range is `react >=16.8`, so
+ * the workaround is gone. The public surface of this file is unchanged: the same props go in,
+ * the same `onSortEnd({ oldIndex, newIndex })` comes out, and the markup and class names are
+ * identical so the existing stylesheet still applies.
+ */
 import {
-	SortableContainer,
-	SortableElement,
-	SortableHandle,
-} from "react-sortable-hoc";
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	restrictToParentElement,
+	restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import {
+	SortableContext,
+	sortableKeyboardCoordinates,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { TextControl, ToggleControl } from "@wordpress/components";
 
 const { ColorControl } = window.EBSocialShareControls;
 
 import { __ } from "@wordpress/i18n";
+
+/**
+ * Profiles carry no stable identifier of their own -- `icon` can legitimately repeat when the
+ * same network is added twice -- so the sort id is derived from the position. Offset by one
+ * because @dnd-kit treats a falsy id as "no active item", which would make the first row
+ * undraggable.
+ */
+const toSortableId = (index) => index + 1;
+const fromSortableId = (id) => Number(id) - 1;
 
 const TrashIcon = ({ position, onDeleteProfile }) => (
 	<span
@@ -34,8 +70,18 @@ const TrashIcon = ({ position, onDeleteProfile }) => (
 	</span>
 );
 
-const DragHandle = SortableHandle(() => (
-	<span className="drag-handle">
+/**
+ * The handle is the only drag affordance, matching the previous `useDragHandle` behaviour:
+ * @dnd-kit's listeners are attached here and nowhere else, so clicking the icon container
+ * still just expands the item's settings.
+ */
+const DragHandle = ({ attributes, listeners, setActivatorNodeRef }) => (
+	<span
+		className="drag-handle"
+		ref={setActivatorNodeRef}
+		{...attributes}
+		{...listeners}
+	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			x="0"
@@ -52,24 +98,40 @@ const DragHandle = SortableHandle(() => (
 			></path>
 		</svg>
 	</span>
-));
+);
 
-const SortableItem = SortableElement(
-	({
-		position,
-		profile,
-		onProfileClick,
-		onDeleteProfile,
-		onColorChange,
-		selectedIcon,
-		onIconTextChange,
-		onLinkChange,
-		onLinkTargetChange,
-		getDefaultLink,
-		onBackgroundColorChange,
-		onSeparatorColorChange,
-	}) => (
-		<li className="drag-helper">
+const SortableItem = ({
+	position,
+	profile,
+	onProfileClick,
+	onDeleteProfile,
+	onColorChange,
+	selectedIcon,
+	onIconTextChange,
+	onLinkChange,
+	onLinkTargetChange,
+	getDefaultLink,
+	onBackgroundColorChange,
+	onSeparatorColorChange,
+}) => {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		setActivatorNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: toSortableId(position) });
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		...(isDragging ? { opacity: 0.6, position: "relative", zIndex: 1 } : {}),
+	};
+
+	return (
+		<li className="drag-helper" ref={setNodeRef} style={style}>
 			<span className="profile-wrapper">
 				<span
 					className="profile-icon-container"
@@ -78,7 +140,11 @@ const SortableItem = SortableElement(
 					<span className={`${profile.icon}`} />
 					<span className="selected-profile-icon">{profile.icon}</span>
 				</span>
-				<DragHandle />
+				<DragHandle
+					attributes={attributes}
+					listeners={listeners}
+					setActivatorNodeRef={setActivatorNodeRef}
+				/>
 				<TrashIcon position={position} onDeleteProfile={onDeleteProfile} />
 			</span>
 
@@ -145,37 +211,54 @@ const SortableItem = SortableElement(
 				</div>
 			)}
 		</li>
-	)
-);
-
-const SortableList = SortableContainer((props) => {
-	const { profiles, ...rest } = props;
-
-	return (
-		<ul>
-			{profiles.map((profile, index) => (
-				<SortableItem
-					profile={profile}
-					key={index}
-					{...rest}
-					position={index}
-					index={index}
-				/>
-			))}
-		</ul>
 	);
-});
+};
 
 const SortableComponent = ({ profiles, onSortEnd, ...rest }) => {
+	/**
+	 * A pointer has to travel 5px before a drag starts, so a plain click on the handle still
+	 * reaches the element underneath instead of being swallowed by the drag sensor.
+	 */
+	const sensors = useSensors(
+		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	);
+
 	if (profiles.length === 0) return <ul />;
 
+	const items = profiles.map((profile, index) => toSortableId(index));
+
+	const handleDragEnd = ({ active, over }) => {
+		if (!over || active.id === over.id) return;
+
+		onSortEnd({
+			oldIndex: fromSortableId(active.id),
+			newIndex: fromSortableId(over.id),
+		});
+	};
+
 	return (
-		<SortableList
-			profiles={profiles}
-			useDragHandle={true}
-			onSortEnd={onSortEnd}
-			{...rest}
-		/>
+		<DndContext
+			sensors={sensors}
+			collisionDetection={closestCenter}
+			modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+			onDragEnd={handleDragEnd}
+		>
+			<SortableContext items={items} strategy={verticalListSortingStrategy}>
+				<ul>
+					{profiles.map((profile, index) => (
+						<SortableItem
+							profile={profile}
+							key={index}
+							{...rest}
+							position={index}
+						/>
+					))}
+				</ul>
+			</SortableContext>
+		</DndContext>
 	);
 };
 

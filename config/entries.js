@@ -8,11 +8,19 @@ export { default as ColorControl } from "../controls/src/controls/color-control"
 export { default as BorderShadowControl } from "../controls/src/controls/border-shadow-control";
 export { default as BackgroundControl } from "../controls/src/controls/background-control";
 export { default as ResponsiveRangeController } from "../controls/src/controls/responsive-range-control";
-export { default as faIcons } from "../controls/src/extras/faIcons";
 export { EBIconPicker, EBDisplayIcon } from "../controls/src/controls/icon-picker";
 
 import "../controls/src/group-controls";
 export { default as AdvancedControls } from "../controls/src/group-controls/components/advanced-controls";
+
+/**
+ * Every control exported above reads its value with `useBlockAttributes()` and writes it with
+ * `useBlockSetAttributes()`. Without this provider those hooks fall back to their context
+ * defaults -- `{}` and a no-op function -- so the controls render but silently discard every
+ * change. Imported from the file rather than `../controls/src/hoc` to avoid that barrel's
+ * AI-feature side-effect imports.
+ */
+export { withBlockContext } from "../controls/src/hoc/withBlockContext";
 
 //Export Helper Functions
 export {

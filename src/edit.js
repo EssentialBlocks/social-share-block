@@ -4,24 +4,25 @@
 import { __ } from "@wordpress/i18n";
 import { useEffect } from "@wordpress/element";
 import { useBlockProps } from "@wordpress/block-editor";
-import { select } from "@wordpress/data";
 
 /**
  * Internal dependencies
  */
 
 import SocialLinks from "./components/social-links";
+import blockAttributes from "./attributes";
 
 const {
 	duplicateBlockIdFix,
-	EBDisplayIcon
+	EBDisplayIcon,
+	withBlockContext
 } = window.EBSocialShareControls;
 
 import classnames from "classnames";
 import Inspector from "./inspector";
 import Style from "./style";
 
-export default function Edit(props) {
+function Edit(props) {
 	const {
 		attributes,
 		setAttributes,
@@ -83,23 +84,30 @@ export default function Edit(props) {
 
 	//
 	useEffect(() => {
-		const profilesOnly = socialDetails.map(({ icon, link, iconText }) => ({
-			icon,
-			link,
-			iconText,
-		}));
+		// `profilesOnly` is the attribute the PHP render callback reads, so every key the
+		// frontend needs has to be projected here -- `linkOpenNewTab` was previously dropped.
+		const profilesOnly = socialDetails.map(
+			({ icon, link, iconText, linkOpenNewTab }) => ({
+				icon,
+				link,
+				iconText,
+				linkOpenNewTab,
+			})
+		);
 
 		setAttributes({ profilesOnly });
 	}, [socialDetails]);
 
 	// this useEffect is for creating a unique blockId for each block's unique className
 	useEffect(() => {
-		const BLOCK_PREFIX = "eb-social-share";
+		// The key must be `blockPrefix`. `duplicateBlockIdFix` renamed this parameter from
+		// `BLOCK_PREFIX` and this call site was never updated, so the helper read `undefined`
+		// and every block was assigned the id "undefined-<random>" — which then landed in the
+		// markup, the generated CSS selectors and the saved post content.
 		duplicateBlockIdFix({
-			BLOCK_PREFIX,
+			blockPrefix: "eb-social-share",
 			blockId,
 			setAttributes,
-			select,
 			clientId,
 		});
 	}, []);
@@ -144,3 +152,20 @@ export default function Edit(props) {
 		</>
 	);
 }
+
+/**
+ * The controls in the Inspector are context-driven: `ResponsiveRangeController`,
+ * `ResponsiveDimensionsControl`, `ColorControl`, `TypographyDropdown`,
+ * `BorderShadowControl`, `BackgroundControl` and `AdvancedControls` all read through
+ * `useBlockAttributes()` and write through `useBlockSetAttributes()`. Neither hook takes a
+ * prop -- they read a React context that only this HOC provides.
+ *
+ * Without it `useBlockSetAttributes()` resolves to DEFAULT_SET_ATTRIBUTES_CONTEXT, which is
+ * `() => {}`, so every slider and colour swatch in the Style tab moved on screen and threw
+ * the value away. The `resRequiredProps` object the Inspector still passes is the older API
+ * these controls no longer accept, and was silently ignored.
+ *
+ * The argument is the registered attribute definitions: controls read
+ * `objAttributes[name].default` through `useBlockDefaultAttributes()` to implement "reset".
+ */
+export default withBlockContext(blockAttributes)(Edit);

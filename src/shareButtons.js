@@ -1,33 +1,74 @@
 import { useState } from "@wordpress/element";
+import { useSelect } from "@wordpress/data";
 import SortableComponent from "./SortableComponent";
 import { __ } from "@wordpress/i18n";
+import { ebGetShareLink } from "./constants/shareLinks";
 const { EBIconPicker } = window.EBSocialShareControls;
 
 export default function SocialProfiles({
     onProfileAdd,
     profiles: propProfiles,
 }) {
-    const [profiles, setProfiles] = useState(propProfiles || []);
+    /**
+     * The `socialDetails` attribute is the single source of truth -- this component holds no
+     * copy of it.
+     *
+     * It used to seed `useState(propProfiles || [])`, which reads the prop once on mount and
+     * never again. On a freshly inserted block that prop is still the `[]` default (Edit only
+     * writes the four starter profiles in its own mount effect), so the panel stayed empty
+     * while the canvas showed four icons -- and the first icon added overwrote them. Existing
+     * blocks fared no better: after an undo the fields kept showing values the attribute no
+     * longer had. Reading the prop directly removes the whole class of bug.
+     */
+    const profiles = Array.isArray(propProfiles) ? propProfiles : [];
+
+    /**
+     * Which item's settings panel is open. Local on purpose: expanding a panel is a viewing
+     * preference, so it must not mark the post dirty. (The legacy `isExpanded` key is still
+     * written by Edit/Inspector on mount and simply ignored here.)
+     */
     const [selectedIcon, setSelectedIcon] = useState(null);
-    const [color, setColor] = useState("");
-    const [backgroundColor, setBackgroundColor] = useState("");
-    const [separatorColor, setSeparatorColor] = useState("");
-    const [iconText, setIconText] = useState("");
+
+    /**
+     * Used to pre-fill the "Override Link" field with the URL an item resolves to today, so
+     * an author can see and edit it rather than guess. Mirrors what the render callback
+     * computes; see src/constants/shareLinks.js.
+     */
+    const { postUrl, postTitle } = useSelect((select) => {
+        const editor = select("core/editor");
+
+        return {
+            postUrl: editor?.getPermalink?.() || "",
+            postTitle: editor?.getEditedPostAttribute?.("title") || "",
+        };
+    }, []);
+
+    const getDefaultLink = (icon) => ebGetShareLink(icon, postUrl, postTitle);
+
+    /**
+     * Replace one profile without mutating it. The previous handlers did
+     * `newProfiles[index].link = value` -- the array was copied but the profile object was
+     * not, so the write landed on the very object held by the block-editor store and by
+     * earlier undo-history entries, corrupting them.
+     */
+    const updateProfile = (index, patch) => {
+        const newProfiles = profiles.map((profile, i) =>
+            i === index ? { ...profile, ...patch } : profile
+        );
+
+        onProfileAdd(newProfiles);
+    };
 
     const onSelectIcon = (selectedIcon) => {
         // When a social profile icon is selected, store it in state and pass it
         // to the callback function
 
         if (selectedIcon) {
-            let newProfiles = [
-                ...profiles,
-                {
-                    icon: selectedIcon,
-                    isExpanded: false,
-                },
-            ];
+            // `link` and `linkOpenNewTab` are deliberately not seeded: an absent `link` means
+            // "no override" and an absent `linkOpenNewTab` means "new tab", which is exactly
+            // what a new item should be, in the same shape as the starter profiles in Edit.
+            const newProfiles = [...profiles, { icon: selectedIcon }];
 
-            setProfiles(newProfiles);
             setSelectedIcon(selectedIcon);
             onProfileAdd(newProfiles);
         }
@@ -36,44 +77,25 @@ export default function SocialProfiles({
     const onDeleteProfile = (position) => {
         // Remove clicked social profile, store rest of the
         // profiles in state, and pass deleted profile name to the callback function
-        let newProfiles = [...profiles];
-        newProfiles.splice(position, 1);
-
-        setProfiles(newProfiles);
-        onProfileAdd(newProfiles);
+        onProfileAdd(profiles.filter((profile, i) => i !== position));
     };
 
     const onProfileClick = (icon) => {
-        // When a profile is clicked, expand/collapse link input form and
-        // store profile icon name, url in state
-        let newProfiles = [...profiles];
-        let newIconText = iconText;
-        let newColor = color;
-        let newBackgroundColor = backgroundColor;
-
-        newProfiles = newProfiles.map((profile) => {
-            if (profile.icon === icon) {
-                newIconText = profile.iconText;
-                newColor = profile.color;
-                return { ...profile, isExpanded: !profile.isExpanded };
-            }
-
-            return { ...profile, isExpanded: false };
-        });
-
-        setProfiles(newProfiles);
-        setSelectedIcon(icon);
-        setIconText(newIconText);
-        setColor(newColor);
-        setBackgroundColor(newBackgroundColor);
+        // Accordion: clicking the open item closes it, clicking another switches to it.
+        // Purely local -- no attribute is written, so browsing the panel leaves the post clean.
+        setSelectedIcon((current) => (current === icon ? null : icon));
     };
 
     const onIconTextChange = (iconText, index) => {
-        let newProfiles = [...profiles];
-        newProfiles[index].iconText = iconText;
+        updateProfile(index, { iconText: iconText });
+    };
 
-        setProfiles(newProfiles);
-        onProfileAdd(newProfiles);
+    const onLinkChange = (link, index) => {
+        updateProfile(index, { link: link });
+    };
+
+    const onLinkTargetChange = (linkOpenNewTab, index) => {
+        updateProfile(index, { linkOpenNewTab: linkOpenNewTab });
     };
 
     const onSortEnd = ({ oldIndex, newIndex }) => {
@@ -82,32 +104,19 @@ export default function SocialProfiles({
         const newProfiles = [...profiles];
         newProfiles.splice(newIndex, 0, newProfiles.splice(oldIndex, 1)[0]);
 
-        setProfiles(newProfiles);
         onProfileAdd(newProfiles);
     };
 
     const onColorChange = (color, index) => {
-        let newProfiles = [...profiles];
-        newProfiles[index].color = color;
-
-        setProfiles(newProfiles);
-        onProfileAdd(newProfiles);
+        updateProfile(index, { color: color });
     };
 
     const onBackgroundColorChange = (bgColor, index) => {
-        let newProfiles = [...profiles];
-        newProfiles[index].backgroundColor = bgColor;
-
-        setProfiles(newProfiles);
-        onProfileAdd(newProfiles);
+        updateProfile(index, { backgroundColor: bgColor });
     };
 
     const onSeparatorColorChange = (separatorColor, index) => {
-        let newProfiles = [...profiles];
-        newProfiles[index].separatorColor = separatorColor;
-
-        setProfiles(newProfiles);
-        onProfileAdd(newProfiles);
+        updateProfile(index, { separatorColor: separatorColor });
     };
 
     return (
@@ -170,8 +179,10 @@ export default function SocialProfiles({
                 onProfileClick={onProfileClick}
                 onDeleteProfile={onDeleteProfile}
                 selectedIcon={selectedIcon}
-                iconText={iconText}
+                getDefaultLink={getDefaultLink}
                 onIconTextChange={onIconTextChange}
+                onLinkChange={onLinkChange}
+                onLinkTargetChange={onLinkTargetChange}
                 onProfileAdd={onProfileAdd}
                 onSortEnd={onSortEnd}
                 onColorChange={onColorChange}

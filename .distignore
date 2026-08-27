@@ -1,29 +1,90 @@
 # A set of files you probably don't want in your WordPress.org distribution
-.babelrc
-.deployignore
-.distignore
-.editorconfig
-.eslintignore
-.eslintrc
-.gitmodules
+
+# Version control
 .git
 .gitignore
-.github
 .gitattributes
+.gitmodules
+.github
 .gitlab-ci.yml
-.travis.yml
-.DS_Store
-Thumbs.db
-behat.yml
 bitbucket-pipelines.yml
-bin
 .circleci/config.yml
+.travis.yml
+
+# `.git` above is a directory at the plugin root, so dist-archive rewrites it to `.git/*`
+# and it only matches the *contents* of a .git directory. A submodule's `.git` is a plain
+# gitfile with no children, so it slips through and has to be named explicitly.
+lib/style-handler/.git
+
+# Editor / OS cruft
+.editorconfig
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Build config & tooling
+.babelrc
+.babelrc.js
+.babelrc.json
+babel.config.js
+babel.config.json
+webpack.config.js
+gulpfile.js
+Gruntfile.js
+config
+.eslintignore
+.eslintrc
+.eslintrc.js
+.eslintrc.json
+.prettierrc
+.prettierrc.js
+.stylelintrc
+.stylelintrc.json
+postcss.config.js
+tailwind.config.js
+
+# Dependency manifests & lockfiles
+package.json
+package-lock.json
+yarn.lock
+.npmrc
 composer.json
 composer.lock
 dependencies.yml
-Gruntfile.js
-package.json
-package-lock.json
+node_modules
+node_modules/**/*.*
+vendor
+
+# Source — compiled into dist/, not needed at runtime
+src
+controls
+util
+
+# Source maps
+*.map
+
+# Orphaned Font Awesome 4/5 font set — 3.85 MB, ~59% of the archive, referenced by nothing.
+# The icon font actually in use is Font Awesome 6.5.1 under assets/css/fontawesome/webfonts/,
+# loaded via `url(../webfonts/…)` from assets/css/fontawesome/css/all.min.css.
+# The only thing in assets/fonts/ that IS referenced is fontIconPicker.{ttf,woff,svg}, pulled
+# in by assets/css/fonticonpicker.base-theme.react.css — those must stay.
+# Patterns are path-anchored on purpose: six of these basenames (fa-solid-900.ttf,
+# fa-brands-400.woff2, …) also exist under webfonts/, so a bare-basename rule would strip the
+# fonts the plugin actually needs and ship it with broken icons.
+assets/fonts/FontAwesome.otf
+assets/fonts/fa-brands-400.*
+assets/fonts/fa-regular-400.*
+assets/fonts/fa-solid-900.*
+assets/fonts/fontawesome-webfont.*
+
+# Stale webpack output from a superseded config. The current build emits dist/frontend/index.js;
+# PHP only ever registers that path, never dist/frontend.js.
+dist/frontend.js
+dist/frontend.asset.php
+
+# Tests & QA
+tests
+behat.yml
 phpunit.xml
 phpunit.xml.dist
 multisite.xml
@@ -32,21 +93,18 @@ multisite.xml.dist
 phpcs.xml
 .phpcs.xml.dist
 phpcs.xml.dist
+
+# Repo docs & internal notes (readme.txt IS shipped — wp.org needs it)
 README.md
-webpack.config.js
+compatibility-report.md
+.wordpress-org
+
+# Packaging & local dev
+.distignore
+.deployignore
+bin
 wp-cli.local.yml
-yarn.lock
-tests
-vendor
-node_modules
 *.sql
 *.tar.gz
 *.zip
-gulpfile.js
-.git
-node_modules/**/*.*
-dist/*.*.map
 **/*.zip
-src
-util
-.wordpress-org

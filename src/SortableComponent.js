@@ -4,7 +4,7 @@ import {
 	SortableElement,
 	SortableHandle,
 } from "react-sortable-hoc";
-import { TextControl } from "@wordpress/components";
+import { TextControl, ToggleControl } from "@wordpress/components";
 
 const { ColorControl } = window.EBSocialShareControls;
 
@@ -63,6 +63,9 @@ const SortableItem = SortableElement(
 		onColorChange,
 		selectedIcon,
 		onIconTextChange,
+		onLinkChange,
+		onLinkTargetChange,
+		getDefaultLink,
 		onBackgroundColorChange,
 		onSeparatorColorChange,
 	}) => (
@@ -79,7 +82,7 @@ const SortableItem = SortableElement(
 				<TrashIcon position={position} onDeleteProfile={onDeleteProfile} />
 			</span>
 
-			{selectedIcon === profile.icon && profile.isExpanded && (
+			{selectedIcon === profile.icon && (
 				<div className="link-form-wrapper">
 					<ColorControl
 						label={__("Icon Color", "essential-blocks")}
@@ -101,6 +104,43 @@ const SortableItem = SortableElement(
 						className="social-share-name-input"
 						value={profile.iconText || ""}
 						onChange={(value) => onIconTextChange(value, position)}
+					/>
+					{/* `type="text"`, not `type="url"`: /contact, #section and mailto:
+					    values are all accepted by esc_url() on render but are `:invalid`
+					    for input[type=url], so the browser would flag a link that works.
+
+					    Pre-filled with whatever the icon resolves to today, so the author
+					    can edit the real value instead of guessing it. `undefined` means
+					    "never touched" and shows that default; an empty string is a real
+					    saved value meaning "cleared", and both fall back to the share URL
+					    on the frontend. Unmapped platforms have no default, so the field
+					    is simply empty. */}
+					<TextControl
+						label={__("Override Link", "essential-blocks")}
+						className="social-share-link-input"
+						type="text"
+						placeholder={__(
+							"https://example.com/your-profile",
+							"essential-blocks"
+						)}
+						help={__(
+							"Replace this to send the icon somewhere else. Clear it to share the current post.",
+							"essential-blocks"
+						)}
+						value={
+							profile.link !== undefined
+								? profile.link
+								: getDefaultLink(profile.icon)
+						}
+						onChange={(value) => onLinkChange(value, position)}
+					/>
+					{/* `!== false`, not truthiness: items saved before this field existed have
+					    no `linkOpenNewTab` key, and the render callback used to hardcode
+					    target="_blank". Defaulting an absent key to `true` keeps them there. */}
+					<ToggleControl
+						label={__("Open in new tab", "essential-blocks")}
+						checked={profile.linkOpenNewTab !== false}
+						onChange={(value) => onLinkTargetChange(value, position)}
 					/>
 				</div>
 			)}

@@ -64,6 +64,16 @@ export default function Style(props) {
     // styling codes start from here
     //
 
+    /**
+     * "Size" (Style tab). Applied as `font-size` straight onto `.eb-social-share-icon` at
+     * every breakpoint, unconditionally — the icons are icon-font glyphs, so font-size is
+     * what scales them.
+     *
+     * It used to reach the icon only via `li a`, and only on the `!showTitle` branch, so with
+     * titles on (the default) the control did nothing at all. Titles are still sized by the
+     * Title typography control on `li a`; setting font-size directly on the icon keeps the
+     * two independent instead of letting the label's typography drive the glyph.
+     */
     const {
         rangeStylesDesktop: iconSizeDesktop,
         rangeStylesTab: iconSizeTab,
@@ -119,6 +129,14 @@ export default function Style(props) {
         attributes,
     });
 
+    /**
+     * Floating Height. When unset these come back empty and the floating list falls back to
+     * `calc(65vh + 50px)` below — the list is fixed at top:35% shifted up 50px, so that is
+     * exactly the room between its top edge and the bottom of the viewport. Every configured
+     * item stays visible, and it still scrolls rather than running off-screen once the list
+     * genuinely outgrows the viewport. The old hardcoded 200px fallback clipped everything
+     * past roughly three items, with the scrollbar hidden so there was no sign of it.
+     */
     const {
         rangeStylesDesktop: floatingHeightDesktop,
         rangeStylesTab: floatingHeightTab,
@@ -292,6 +310,23 @@ export default function Style(props) {
         ""
     );
 
+    /**
+     * Floating-bar notes (all three breakpoints below follow the same rules):
+     *
+     * z-index — the bar is `position: fixed` but carried no stacking order, so it painted in
+     * document order against every other positioned element on the page. Twenty Twenty-Five's
+     * footer group (position: relative, z-index: auto, later in the DOM) covered the bar
+     * outright and swallowed the pointer, so "mouseenter" never fired on the icons and no
+     * label ever slid out. 999 sits above ordinary theme content and below the admin bar
+     * (99999) and typical modal/consent overlays.
+     *
+     * Label sizing — the hover label is sized by its own content and revealed by animating
+     * max-width, not width. Collapsing to `width: 0` and re-opening to a fixed pixel width
+     * clipped every label longer than that width, and the ":before" separator eats a further
+     * 21px of it, so "Facebook" and "WhatsApp" were cut off mid-word. max-width still
+     * animates, while `width: max-content` keeps the drawer exactly as wide as its text.
+     * "Floating Width" therefore acts as a cap rather than a forced width.
+     */
     const wrapperStylesDesktop = `
 	div.eb-social-share-wrapper ul {
 		margin: 0;
@@ -300,7 +335,7 @@ export default function Style(props) {
 
 	${isFloating
             ? `
-	.eb-parent-wrapper.eb-parent-eb-social-share-qier2p8.eb_animation.eb__animated {
+	.eb-parent-wrapper.eb-parent-${blockId}.eb_animation.eb__animated {
 		animation-name: none !important;
 		-webkit-animation-name: none !important;
 	}
@@ -402,6 +437,7 @@ export default function Style(props) {
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares {
 		display: inline-block;
 		position: fixed;
+		z-index: 999;
 		left: 0;
 		top: 35%;
 		transform: translate(0, -50px);
@@ -411,7 +447,7 @@ export default function Style(props) {
 		max-height: ${typeof floatingHeightDesktop === "string" &&
             floatingHeightDesktop.length !== 0
             ? floatingHeightDesktop
-            : "200px"
+            : "calc(65vh + 50px)"
         };
 		${isFloating ? wrpBackgroundStylesDesktop : ""}
 		${isFloating ? wrpBdShdStyesDesktop : ""}
@@ -422,7 +458,8 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares .eb-social-share-text {
-		width: 0;
+		width: max-content;
+		max-width: 0;
 		overflow: hidden;
 		white-space: nowrap;
 		transition: all 0.4s;
@@ -431,6 +468,10 @@ export default function Style(props) {
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a .eb-social-share-icon {
 		width: ${iconSizeDesktop};
 		text-align: center;
+	}
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		font-size: ${iconSizeDesktop};
 	}
 
     ${!showTitle
@@ -447,10 +488,10 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
-		width: ${typeof floatingWidthDesktop === "string" &&
+		max-width: ${typeof floatingWidthDesktop === "string" &&
             floatingWidthDesktop.length !== 0
             ? floatingWidthDesktop
-            : "100px"
+            : "300px"
         };
 	}
 
@@ -529,17 +570,17 @@ export default function Style(props) {
 		max-height: ${typeof floatingHeightTab === "string" &&
             floatingHeightTab.length !== 0
             ? floatingHeightTab
-            : "200px"
+            : "calc(65vh + 50px)"
         };
 		${isFloating ? wrpBackgroundStylesTab : ""}
 		${isFloating ? wrpBdShdStyesTab : ""}
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
-		width: ${typeof floatingWidthTab === "string" &&
+		max-width: ${typeof floatingWidthTab === "string" &&
             floatingWidthTab.length !== 0
             ? floatingWidthTab
-            : "100px"
+            : "300px"
         };
 	}
 
@@ -554,6 +595,10 @@ export default function Style(props) {
 
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {
 		${socialBdrShdwsHoverTab}
+	}
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		font-size: ${iconSizeTab};
 	}
 
     ${!showTitle
@@ -610,17 +655,17 @@ export default function Style(props) {
 		max-height: ${typeof floatingHeightMobile === "string" &&
             floatingHeightMobile.length !== 0
             ? floatingHeightMobile
-            : "200px"
+            : "calc(65vh + 50px)"
         };
 		${isFloating ? wrpBackgroundStylesMobile : ""}
 		${isFloating ? wrpBdShdStyesMobile : ""}
 	}
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
-		width: ${typeof floatingWidthMobile === "string" &&
+		max-width: ${typeof floatingWidthMobile === "string" &&
             floatingWidthMobile.length !== 0
             ? floatingWidthMobile
-            : "100px"
+            : "300px"
         };
 	}
 
@@ -642,6 +687,10 @@ export default function Style(props) {
 
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li:hover a {
 		${socialBdrShdwsHoverMobile}
+	}
+
+	.${blockId}.eb-social-share-wrapper ul.eb-social-shares li a .eb-social-share-icon {
+		font-size: ${iconSizeMobile};
 	}
 
     ${!showTitle

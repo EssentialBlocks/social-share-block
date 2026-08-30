@@ -343,6 +343,24 @@ export default function Style(props) {
      * animates, while `width: max-content` keeps the drawer exactly as wide as its text.
      * "Floating Width" therefore acts as a cap rather than a forced width.
      *
+     * Scroll-reveal animation — a floating bar must opt out of it entirely. When any
+     * animation is picked, the shared controls emit
+     * `body:not(.wp-admin) .eb-parent-<id>.eb_animation { visibility: hidden; opacity: 0 }`
+     * and `eb-animation-load.js` only clears it by swapping `eb___animated` for
+     * `eb__animated` once `isInViewport()` passes. That test reads the parent wrapper,
+     * which for a floating bar is a zero-height box sitting at the block's position in
+     * normal flow — usually far below the fold — while the bar itself is viewport-anchored
+     * and should be on screen from the first paint. So the swap never fired, and the bar
+     * stayed `visibility: hidden; opacity: 0` until the reader happened to scroll past the
+     * block's document position, then faded in over the animation speed. Measured: still
+     * invisible after 6s on load, revealed 641ms after a scroll to y=1000 and fully opaque
+     * ~1.4s later. `body:not(.wp-admin)` is why the editor never showed this.
+     *
+     * The existing `animation-name: none` rule below only silenced the keyframes on the
+     * already-swapped state, so it never reached the gate that precedes them. Overriding
+     * the gate carries one more class than the generated rule and therefore wins on
+     * specificity rather than source order.
+     *
      * Background overlay (Advanced > Background > Enable Overlay) — two problems, both
      * only when floating. `generateBackgroundControlStyles` adds `position: relative;
      * z-index: 2` to its background output as soon as the overlay is switched on, so it
@@ -385,6 +403,11 @@ export default function Style(props) {
 
 	${isFloating
             ? `
+	body:not(.wp-admin) .eb-parent-wrapper.eb-parent-${blockId}.eb_animation {
+		visibility: visible;
+		opacity: 1;
+	}
+
 	.eb-parent-wrapper.eb-parent-${blockId}.eb_animation.eb__animated {
 		animation-name: none !important;
 		-webkit-animation-name: none !important;

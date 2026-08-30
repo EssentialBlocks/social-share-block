@@ -104,6 +104,29 @@ $xing: #026466;
 	top: 35%;
 }
 
+/**
+ * Exempt a floating bar from the scroll-reveal animation.
+ *
+ * Picking any animation makes the block generate
+ * `body:not(.wp-admin) .eb-parent-<id>.eb_animation { visibility: hidden; opacity: 0 }`,
+ * cleared only when eb-animation-load.js swaps `eb___animated` for `eb__animated`
+ * once `isInViewport()` passes. That test reads the parent wrapper, a zero-height
+ * box at the block's position in normal flow, while the floating bar is anchored
+ * to the viewport -- so the bar stayed hidden until the reader scrolled past the
+ * block's document position, then faded in over the animation speed.
+ *
+ * `eb-social-share-floating-parent` is emitted by the render callback, so this
+ * reaches posts saved before the fix without needing them re-saved. Carries one
+ * more class than the generated rule and so wins on specificity, not source order.
+ * `body:not(.wp-admin)` matches the generated rule's own scope, leaving the editor
+ * preview -- where the animation is meant to be previewable -- untouched.
+ */
+body:not(.wp-admin)
+	.eb-parent-wrapper.eb-social-share-floating-parent.eb_animation {
+	visibility: visible;
+	opacity: 1;
+}
+
 .social-icon {
 	font-style: normal;
 }

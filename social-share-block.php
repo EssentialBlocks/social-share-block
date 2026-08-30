@@ -230,7 +230,33 @@
 
     ?>
 <div<?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes this. ?>>
-    <div class="eb-parent-wrapper eb-parent-<?php echo esc_attr( $blockId ); ?> <?php echo esc_attr( $classHook ); ?>">
+    <?php
+        /**
+         * Marker class so the stylesheet can exempt a floating bar from the scroll-reveal
+         * animation.
+         *
+         * When an animation is picked, the block's generated CSS hides the parent wrapper
+         * with `visibility: hidden; opacity: 0` until `eb-animation-load.js` swaps
+         * `eb___animated` for `eb__animated`, which it only does once `isInViewport()`
+         * passes. That test measures this wrapper -- a zero-height box at the block's place
+         * in normal flow -- while the floating bar itself is anchored to the viewport and
+         * should be on screen from the first paint. The bar therefore stayed invisible
+         * until the reader scrolled past the block's document position.
+         *
+         * The same exemption is generated into `blockMeta` by style.js, but that only
+         * reaches a block when it is re-saved in the editor. Emitting the hook here means
+         * the rule in the plugin stylesheet applies to posts saved before the fix, with no
+         * re-save and no `:has()` support needed.
+         */
+        $parentClasses = 'eb-parent-wrapper eb-parent-' . $blockId;
+        if ( $isFloating ) {
+            $parentClasses .= ' eb-social-share-floating-parent';
+        }
+        if ( '' !== $classHook ) {
+            $parentClasses .= ' ' . $classHook;
+        }
+    ?>
+    <div class="<?php echo esc_attr( $parentClasses ); ?>">
         <div
             class="<?php echo esc_attr( $blockId ); ?> eb-social-share-wrapper<?php echo $isFloating ? esc_attr( ' eb-social-share-floating' ) : ''; ?><?php echo $isFloating && 'circular' == $iconShape ? esc_attr( ' eb-social-share-circular' ) : "" ?>">
             <ul class="eb-social-shares">

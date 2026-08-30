@@ -343,6 +343,28 @@ export default function Style(props) {
      * animates, while `width: max-content` keeps the drawer exactly as wide as its text.
      * "Floating Width" therefore acts as a cap rather than a forced width.
      *
+     * Background overlay (Advanced > Background > Enable Overlay) — two problems, both
+     * only when floating. `generateBackgroundControlStyles` adds `position: relative;
+     * z-index: 2` to its background output as soon as the overlay is switched on, so it
+     * can host the `:before`. Injected into the floating list rule that lands *after*
+     * `position: fixed; z-index: 999` and wins on source order, which quietly dropped the
+     * bar out of fixed positioning and back into normal flow in the middle of the page.
+     * The floating geometry is therefore re-asserted after the injected styles. The
+     * overlay itself was also painted on `.eb-social-share-wrapper`, a full-width block
+     * div rather than the bar, so the tint spanned the whole content column; when the bar
+     * floats it now goes on the list, like every other relocated style. `position: fixed`
+     * establishes a containing block just as `relative` does, so the inset-0 pseudo
+     * element still resolves against the bar.
+     *
+     * Margin & padding (Advanced tab) — same relocation. Desktop gated them off with
+     * `!isFloating` and emitted no replacement, while tab and mobile left them on the
+     * wrapper ungated, so a floating bar got neither: the values were stored and then
+     * dropped or applied to a zero-size box. They now ride along with the background
+     * and border on `ul.eb-social-shares`, which is the box the reader actually sees.
+     * Note the list carries a `margin:0; padding:0` reset from the shared
+     * `div.eb-social-share-wrapper ul` rule; the relocated declarations sit on a
+     * four-class selector and outrank it.
+     *
      * Hover border & shadow — the normal border/shadow is relocated onto
      * `ul.eb-social-shares` when the bar floats, because the wrapper collapses to a
      * zero-size box once its only child is `position: fixed`. The hover half was never
@@ -386,16 +408,28 @@ export default function Style(props) {
 		${!isFloating ? wrpBdShdStylesHoverDesktop : ""}
 	}
 
+	${!isFloating
+            ? `
 	.${blockId}.eb-social-share-wrapper:before{
 		${wrpOverlayStylesDesktop}
 		transition: ${wrpOvlTransitionStyle};
-
 	}
 
 	.${blockId}.eb-social-share-wrapper:hover:before{
 		${wrpHoverOverlayStylesDesktop}
-
 	}
+	`
+            : `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:before{
+		${wrpOverlayStylesDesktop}
+		transition: ${wrpOvlTransitionStyle};
+	}
+
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover:before{
+		${wrpHoverOverlayStylesDesktop}
+	}
+	`
+        }
 
 
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares {
@@ -477,12 +511,15 @@ export default function Style(props) {
             ? floatingHeightDesktop
             : "calc(65vh + 50px)"
         };
+		${isFloating ? wrpMarginDesktop : ""}
+		${isFloating ? wrpPaddingDesktop : ""}
 		${isFloating ? wrpBackgroundStylesDesktop : ""}
 		${isFloating ? wrpBdShdStyesDesktop : ""}
 		${isFloating
             ? `transition: ${wrpBgTransitionStyle}, ${wrpBdShdTransitionStyle};`
             : ""
         }
+		${isFloating ? "position: fixed; z-index: 999;" : ""}
 	}
 
 	${isFloating
@@ -572,8 +609,8 @@ export default function Style(props) {
 
 	.${blockId}.eb-social-share-wrapper {
 		${wrpBackgroundStylesTab}
-		${wrpMarginTab}
-		${wrpPaddingTab}
+		${!isFloating ? wrpMarginTab : ""}
+		${!isFloating ? wrpPaddingTab : ""}
 		${wrpBdShdStyesTab}
 	}
 
@@ -583,15 +620,26 @@ export default function Style(props) {
 
 	}
 
+	${!isFloating
+            ? `
 	.${blockId}.eb-social-share-wrapper:before{
 		${wrpOverlayStylesTab}
-
 	}
 
 	.${blockId}.eb-social-share-wrapper:hover:before{
 		${wrpHoverOverlayStylesTab}
-
 	}
+	`
+            : `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:before{
+		${wrpOverlayStylesTab}
+	}
+
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover:before{
+		${wrpHoverOverlayStylesTab}
+	}
+	`
+        }
 
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares {
 		${iconSpaceTab}
@@ -613,8 +661,11 @@ export default function Style(props) {
             ? floatingHeightTab
             : "calc(65vh + 50px)"
         };
+		${isFloating ? wrpMarginTab : ""}
+		${isFloating ? wrpPaddingTab : ""}
 		${isFloating ? wrpBackgroundStylesTab : ""}
 		${isFloating ? wrpBdShdStyesTab : ""}
+		${isFloating ? "position: fixed; z-index: 999;" : ""}
 	}
 
 	${isFloating
@@ -665,8 +716,8 @@ export default function Style(props) {
     const wrapperStylesMobile = `
 	.${blockId}.eb-social-share-wrapper {
 		${wrpBackgroundStylesMobile}
-		${wrpMarginMobile}
-		${wrpPaddingMobile}
+		${!isFloating ? wrpMarginMobile : ""}
+		${!isFloating ? wrpPaddingMobile : ""}
 		${wrpBdShdStyesMobile}
 	}
 
@@ -676,15 +727,26 @@ export default function Style(props) {
 
 	}
 
+	${!isFloating
+            ? `
 	.${blockId}.eb-social-share-wrapper:before{
 		${wrpOverlayStylesMobile}
-
 	}
 
 	.${blockId}.eb-social-share-wrapper:hover:before{
 		${wrpHoverOverlayStylesMobile}
-
 	}
+	`
+            : `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:before{
+		${wrpOverlayStylesMobile}
+	}
+
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover:before{
+		${wrpHoverOverlayStylesMobile}
+	}
+	`
+        }
 
 	.${blockId}.eb-social-share-wrapper ul.eb-social-shares {
 		${iconSpaceMobile}
@@ -707,8 +769,11 @@ export default function Style(props) {
             ? floatingHeightMobile
             : "calc(65vh + 50px)"
         };
+		${isFloating ? wrpMarginMobile : ""}
+		${isFloating ? wrpPaddingMobile : ""}
 		${isFloating ? wrpBackgroundStylesMobile : ""}
 		${isFloating ? wrpBdShdStyesMobile : ""}
+		${isFloating ? "position: fixed; z-index: 999;" : ""}
 	}
 
 	${isFloating

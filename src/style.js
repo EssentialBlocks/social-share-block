@@ -426,10 +426,18 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper:hover{
-
-		${wrpHoverBackgroundStylesDesktop}
+		${!isFloating ? wrpHoverBackgroundStylesDesktop : ""}
 		${!isFloating ? wrpBdShdStylesHoverDesktop : ""}
 	}
+
+	${isFloating
+            ? `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover {
+		${wrpHoverBackgroundStylesDesktop}
+	}
+	`
+            : ""
+        }
 
 	${!isFloating
             ? `
@@ -638,10 +646,18 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper:hover{
-		${wrpHoverBackgroundStylesTab}
+		${!isFloating ? wrpHoverBackgroundStylesTab : ""}
 		${!isFloating ? wrpBdShdStylesHoverTab : ""}
-
 	}
+
+	${isFloating
+            ? `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover {
+		${wrpHoverBackgroundStylesTab}
+	}
+	`
+            : ""
+        }
 
 	${!isFloating
             ? `
@@ -745,10 +761,18 @@ export default function Style(props) {
 	}
 
 	.${blockId}.eb-social-share-wrapper:hover{
-		${wrpHoverBackgroundStylesMobile}
+		${!isFloating ? wrpHoverBackgroundStylesMobile : ""}
 		${!isFloating ? wrpBdShdStylesHoverMobile : ""}
-
 	}
+
+	${isFloating
+            ? `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover {
+		${wrpHoverBackgroundStylesMobile}
+	}
+	`
+            : ""
+        }
 
 	${!isFloating
             ? `

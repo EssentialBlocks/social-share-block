@@ -21,7 +21,7 @@ import classnames from "classnames";
 import Inspector from "./inspector";
 import Style from "./style";
 
-export default function Edit(props) {
+function Edit(props) {
 	const {
 		attributes,
 		setAttributes,
@@ -83,20 +83,34 @@ export default function Edit(props) {
 
 	//
 	useEffect(() => {
-		const profilesOnly = socialDetails.map(({ icon, link, iconText }) => ({
-			icon,
-			link,
-			iconText,
-		}));
+		// `profilesOnly` is the attribute the PHP render callback reads, so every key the
+		// frontend needs has to be projected here -- `linkOpenNewTab` was previously dropped.
+		const profilesOnly = socialDetails.map(
+			({ icon, link, iconText, linkOpenNewTab }) => ({
+				icon,
+				link,
+				iconText,
+				linkOpenNewTab,
+			})
+		);
 
 		setAttributes({ profilesOnly });
 	}, [socialDetails]);
 
 	// this useEffect is for creating a unique blockId for each block's unique className
 	useEffect(() => {
-		const BLOCK_PREFIX = "eb-social-share";
+		/**
+		 * `duplicateBlockIdFix` in the pinned controls build takes `BLOCK_PREFIX` (not
+		 * `blockPrefix`) and finds duplicates through `select("core/block-editor").getBlocks()`,
+		 * so it needs the store's `select` handed to it. Miss either one and the block dies on
+		 * mount: without `select` the helper calls `undefined("core/block-editor")` inside this
+		 * effect, which surfaces as "This block has encountered an error and cannot be
+		 * previewed."; without `BLOCK_PREFIX` every block is assigned the id
+		 * "undefined-<random>", which then lands in the markup, the generated CSS selectors and
+		 * the saved post content.
+		 */
 		duplicateBlockIdFix({
-			BLOCK_PREFIX,
+			BLOCK_PREFIX: "eb-social-share",
 			blockId,
 			setAttributes,
 			select,
@@ -144,3 +158,5 @@ export default function Edit(props) {
 		</>
 	);
 }
+
+export default Edit;

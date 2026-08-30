@@ -48,8 +48,9 @@ class Social_Share_Font_Loader {
      * @access public
      */
     public function get_fonts_on_render_block( $block_content, $block ) {
-        if ( isset( $block['attrs'] ) ) {
-            if ( 'essential-blocks' === self::$block_name || $block['blockName'] === self::$block_name ) {
+        if ( is_array( $block ) && isset( $block['attrs'] ) && is_array( $block['attrs'] ) ) {
+            $block_name = isset( $block['blockName'] ) ? $block['blockName'] : '';
+            if ( 'essential-blocks' === self::$block_name || $block_name === self::$block_name ) {
                 $fonts        = self::get_fonts_family( $block['attrs'] );
                 self::$gfonts = array_unique( array_merge( self::$gfonts, $fonts ) );
             }
@@ -64,9 +65,13 @@ class Social_Share_Font_Loader {
      * @access public
      */
     public static function get_fonts_family( $attributes ) {
-        $keys             = preg_grep( '/^(\w+)FontFamily/i', array_keys( $attributes ), 0 );
+        $keys             = preg_grep( '/^(\w+)FontFamily/i', array_keys( (array) $attributes ), 0 );
         $googleFontFamily = [];
-        foreach ( $keys as $key ) {
+        foreach ( (array) $keys as $key ) {
+            // Only scalar font names can be used as an array key.
+            if ( ! isset( $attributes[$key] ) || ! is_string( $attributes[$key] ) ) {
+                continue;
+            }
             $googleFontFamily[$attributes[$key]] = $attributes[$key];
         }
         return $googleFontFamily;

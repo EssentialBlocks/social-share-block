@@ -78,6 +78,55 @@ $xing: #026466;
 	}
 }
 
+/**
+ * Static floating geometry.
+ *
+ * The render callback emits `eb-social-share-floating` server-side, but
+ * every rule that took the bar out of flow used to live only in the
+ * per-post stylesheet generated from `blockMeta`
+ * (uploads/eb-style/eb-style-<postID>.min.css). That file is enqueued last
+ * in `<head>`, so until it arrived the list was a static, full-width block
+ * in normal flow: it occupied layout space and pushed the following section
+ * down, then snapped out of flow once the CSS applied. Shipping the four
+ * positioning properties here puts them in the render-blocking, cacheable
+ * plugin stylesheet instead, so the bar is never in flow.
+ *
+ * Deliberately only the geometry that is constant for every floating
+ * instance. Everything control-driven (background, border, shadow,
+ * max-height, label widths, icon sizing) stays in the generated per-post
+ * CSS, whose selector carries one more class than this one and therefore
+ * still wins once it loads.
+ */
+.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares {
+	position: fixed;
+	z-index: 999;
+	left: 0;
+	top: 35%;
+}
+
+/**
+ * Exempt a floating bar from the scroll-reveal animation.
+ *
+ * Picking any animation makes the block generate
+ * `body:not(.wp-admin) .eb-parent-<id>.eb_animation { visibility: hidden; opacity: 0 }`,
+ * cleared only when eb-animation-load.js swaps `eb___animated` for `eb__animated`
+ * once `isInViewport()` passes. That test reads the parent wrapper, a zero-height
+ * box at the block's position in normal flow, while the floating bar is anchored
+ * to the viewport -- so the bar stayed hidden until the reader scrolled past the
+ * block's document position, then faded in over the animation speed.
+ *
+ * `eb-social-share-floating-parent` is emitted by the render callback, so this
+ * reaches posts saved before the fix without needing them re-saved. Carries one
+ * more class than the generated rule and so wins on specificity, not source order.
+ * `body:not(.wp-admin)` matches the generated rule's own scope, leaving the editor
+ * preview -- where the animation is meant to be previewable -- untouched.
+ */
+body:not(.wp-admin)
+	.eb-parent-wrapper.eb-social-share-floating-parent.eb_animation {
+	visibility: visible;
+	opacity: 1;
+}
+
 .social-icon {
 	font-style: normal;
 }

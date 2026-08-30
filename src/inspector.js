@@ -429,20 +429,26 @@ function Inspector({ attributes, setAttributes }) {
                                                     step={1}
                                                 />
 
-                                                <label
-                                                    style={{
-                                                        display: "block",
-                                                        margin: "-20px 0 20px",
-                                                    }}
-                                                >
-                                                    <i>
-                                                        N.B. 'Rows Gap' is used
-                                                        when you have multiple
-                                                        rows of social profiles.
-                                                        Normally in case of only
-                                                        one row, it's not needed
-                                                    </i>
-                                                </label>
+                                                {/*
+                                                  * `eb-help-text` is the shared
+                                                  * convention for control help text.
+                                                  * This used to be a bare label pulled
+                                                  * up by an inline `margin: -20px 0 20px`,
+                                                  * written when the range control still
+                                                  * carried a bottom margin. The controls
+                                                  * stylesheet now forces
+                                                  * `.responsiveRangeControllerWrapper
+                                                  * .components-base-control` to
+                                                  * `margin-bottom: 0 !important`, so that
+                                                  * -20px had nothing left to absorb and
+                                                  * dragged the text up over the slider.
+                                                  */}
+                                                <p className="eb-help-text">
+                                                    {__(
+                                                        "N.B. 'Rows Gap' is used when you have multiple rows of social profiles. Normally in case of only one row, it's not needed",
+                                                        "essential-blocks"
+                                                    )}
+                                                </p>
                                             </>
                                         )}
 

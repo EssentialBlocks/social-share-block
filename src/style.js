@@ -342,6 +342,18 @@ export default function Style(props) {
      * 21px of it, so "Facebook" and "WhatsApp" were cut off mid-word. max-width still
      * animates, while `width: max-content` keeps the drawer exactly as wide as its text.
      * "Floating Width" therefore acts as a cap rather than a forced width.
+     *
+     * Hover border & shadow — the normal border/shadow is relocated onto
+     * `ul.eb-social-shares` when the bar floats, because the wrapper collapses to a
+     * zero-size box once its only child is `position: fixed`. The hover half was never
+     * relocated with it: desktop gated it off with `!isFloating` and emitted no
+     * replacement, while tab and mobile left it on the wrapper ungated. Either way every
+     * value from Advanced > Border & Shadow > Hover was computed, stored in `blockMeta`
+     * and then dropped or aimed at an invisible element. Hover has to land on whichever
+     * element carries the normal border, so each breakpoint now emits a floating-only
+     * `ul.eb-social-shares:hover` rule and keeps `.wrapper:hover` for the non-floating
+     * case. The floating list also picks up the transition the wrapper already had, so
+     * the hover change eases in instead of snapping.
      */
     const wrapperStylesDesktop = `
 	div.eb-social-share-wrapper ul {
@@ -467,7 +479,20 @@ export default function Style(props) {
         };
 		${isFloating ? wrpBackgroundStylesDesktop : ""}
 		${isFloating ? wrpBdShdStyesDesktop : ""}
+		${isFloating
+            ? `transition: ${wrpBgTransitionStyle}, ${wrpBdShdTransitionStyle};`
+            : ""
+        }
 	}
+
+	${isFloating
+            ? `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover {
+		${wrpBdShdStylesHoverDesktop}
+	}
+	`
+            : ""
+        }
 
 	ul.eb-social-shares::-webkit-scrollbar {
 		display: none;
@@ -554,7 +579,7 @@ export default function Style(props) {
 
 	.${blockId}.eb-social-share-wrapper:hover{
 		${wrpHoverBackgroundStylesTab}
-		${wrpBdShdStylesHoverTab}
+		${!isFloating ? wrpBdShdStylesHoverTab : ""}
 
 	}
 
@@ -591,6 +616,15 @@ export default function Style(props) {
 		${isFloating ? wrpBackgroundStylesTab : ""}
 		${isFloating ? wrpBdShdStyesTab : ""}
 	}
+
+	${isFloating
+            ? `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover {
+		${wrpBdShdStylesHoverTab}
+	}
+	`
+            : ""
+        }
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
 		max-width: ${typeof floatingWidthTab === "string" &&
@@ -638,7 +672,7 @@ export default function Style(props) {
 
 	.${blockId}.eb-social-share-wrapper:hover{
 		${wrpHoverBackgroundStylesMobile}
-		${wrpBdShdStylesHoverMobile}
+		${!isFloating ? wrpBdShdStylesHoverMobile : ""}
 
 	}
 
@@ -676,6 +710,15 @@ export default function Style(props) {
 		${isFloating ? wrpBackgroundStylesMobile : ""}
 		${isFloating ? wrpBdShdStyesMobile : ""}
 	}
+
+	${isFloating
+            ? `
+	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares:hover {
+		${wrpBdShdStylesHoverMobile}
+	}
+	`
+            : ""
+        }
 
 	.${blockId}.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares li a.eb-slide-out .eb-social-share-text {
 		max-width: ${typeof floatingWidthMobile === "string" &&

@@ -78,6 +78,32 @@ $xing: #026466;
 	}
 }
 
+/**
+ * Static floating geometry.
+ *
+ * The render callback emits `eb-social-share-floating` server-side, but
+ * every rule that took the bar out of flow used to live only in the
+ * per-post stylesheet generated from `blockMeta`
+ * (uploads/eb-style/eb-style-<postID>.min.css). That file is enqueued last
+ * in `<head>`, so until it arrived the list was a static, full-width block
+ * in normal flow: it occupied layout space and pushed the following section
+ * down, then snapped out of flow once the CSS applied. Shipping the four
+ * positioning properties here puts them in the render-blocking, cacheable
+ * plugin stylesheet instead, so the bar is never in flow.
+ *
+ * Deliberately only the geometry that is constant for every floating
+ * instance. Everything control-driven (background, border, shadow,
+ * max-height, label widths, icon sizing) stays in the generated per-post
+ * CSS, whose selector carries one more class than this one and therefore
+ * still wins once it loads.
+ */
+.eb-social-share-wrapper.eb-social-share-floating ul.eb-social-shares {
+	position: fixed;
+	z-index: 999;
+	left: 0;
+	top: 35%;
+}
+
 .social-icon {
 	font-style: normal;
 }

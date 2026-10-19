@@ -3,7 +3,7 @@
     /**
      * Plugin Name:     Social Share Block
      * Description:     Share your posts & pages instantly on popular social platforms in one click from your website.
-     * Version:         2.1.0
+     * Version:         2.1.1
      * Author:          WPDeveloper
      * Author URI:         https://wpdeveloper.net
      * License:         GPL-3.0-or-later
@@ -29,7 +29,6 @@
      */
 
     require_once __DIR__ . '/includes/font-loader.php';
-    require_once __DIR__ . '/includes/post-meta.php';
     require_once __DIR__ . '/includes/helpers.php';
 
     /**
@@ -62,7 +61,7 @@
     function create_block_social_share_block_init() {
 
         if ( ! defined( 'SOCIAL_SHARE_BLOCKS_VERSION' ) ) {
-            define( 'SOCIAL_SHARE_BLOCKS_VERSION', "2.1.0" );
+            define( 'SOCIAL_SHARE_BLOCKS_VERSION', "2.1.1" );
         }
         if ( ! defined( 'SOCIAL_SHARE_BLOCKS_ADMIN_URL' ) ) {
             define( 'SOCIAL_SHARE_BLOCKS_ADMIN_URL', plugin_dir_url( __FILE__ ) );

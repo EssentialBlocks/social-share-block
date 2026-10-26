@@ -92,7 +92,7 @@ than one directory, and a bare-basename rule would strip fonts the plugin needs.
 ## Contributors
 
 - [@RahatSheikhLeon](https://github.com/RahatSheikhLeon)
-- [WPDeveloper](https://github.com/EssentialBlocks) team — wpdevteam, re_enter_rupok, Asif2BD, alam789, fencermonir
+- [WPDeveloper](https://github.com/EssentialBlocks) team — wpdevteam, re_enter_rupok, Asif2BD
 
 ## Support and documentation
 

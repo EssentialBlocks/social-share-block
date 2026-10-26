@@ -3,7 +3,7 @@
     /**
      * Plugin Name:     Social Share Block
      * Description:     Share your posts & pages instantly on popular social platforms in one click from your website.
-     * Version:         2.1.0
+     * Version:         2.1.1
      * Author:          WPDeveloper
      * Author URI:         https://wpdeveloper.net
      * License:         GPL-3.0-or-later
@@ -29,7 +29,6 @@
      */
 
     require_once __DIR__ . '/includes/font-loader.php';
-    require_once __DIR__ . '/includes/post-meta.php';
     require_once __DIR__ . '/includes/helpers.php';
 
     /**
@@ -62,7 +61,7 @@
     function create_block_social_share_block_init() {
 
         if ( ! defined( 'SOCIAL_SHARE_BLOCKS_VERSION' ) ) {
-            define( 'SOCIAL_SHARE_BLOCKS_VERSION', "2.1.0" );
+            define( 'SOCIAL_SHARE_BLOCKS_VERSION', "2.1.1" );
         }
         if ( ! defined( 'SOCIAL_SHARE_BLOCKS_ADMIN_URL' ) ) {
             define( 'SOCIAL_SHARE_BLOCKS_ADMIN_URL', plugin_dir_url( __FILE__ ) );
@@ -220,13 +219,15 @@
         global $post;
         $attributes   = is_array( $attributes ) ? $attributes : [];
         $post_id      = isset( $post->ID ) ? $post->ID : 0;
-        $profilesOnly = ! empty( $attributes['profilesOnly'] ) ? $attributes['profilesOnly'] : [];
-        $iconEffect   = ! empty( $attributes['icnEffect'] ) ? $attributes['icnEffect'] : '';
-        $blockId      = isset( $attributes['blockId'] ) ? $attributes['blockId'] : '';
-        $classHook    = ! empty( $attributes['classHook'] ) ? $attributes['classHook'] : '';
-        $showTitle    = isset( $attributes['showTitle'] ) ? $attributes['showTitle'] : true;
-        $isFloating   = isset( $attributes['isFloating'] ) ? $attributes['isFloating'] : false;
-        $iconShape    = isset( $attributes['iconShape'] ) ? $attributes['iconShape'] : '';
+        // Attributes are not declared in block.json, so they arrive with whatever type
+        // the post content holds. Coerce each one to the type the markup expects.
+        $profilesOnly = isset( $attributes['profilesOnly'] ) && is_array( $attributes['profilesOnly'] ) ? $attributes['profilesOnly'] : [];
+        $iconEffect   = is_string( $attributes['icnEffect'] ?? null ) ? $attributes['icnEffect'] : '';
+        $blockId      = is_string( $attributes['blockId'] ?? null ) ? $attributes['blockId'] : '';
+        $classHook    = is_string( $attributes['classHook'] ?? null ) ? $attributes['classHook'] : '';
+        $showTitle    = isset( $attributes['showTitle'] ) ? (bool) $attributes['showTitle'] : true;
+        $isFloating   = isset( $attributes['isFloating'] ) ? (bool) $attributes['isFloating'] : false;
+        $iconShape    = is_string( $attributes['iconShape'] ?? null ) ? $attributes['iconShape'] : '';
 
     ?>
 <div<?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes this. ?>>
@@ -263,7 +264,7 @@
                 <?php
                         foreach ( $profilesOnly as $profile ) {
                                 $profile     = is_array( $profile ) ? $profile : [];
-                                $profileIcon = isset( $profile['icon'] ) ? (string) $profile['icon'] : '';
+                                $profileIcon = isset( $profile['icon'] ) && is_scalar( $profile['icon'] ) ? (string) $profile['icon'] : '';
                                 $matches     = [];
                                 preg_match( '/fa-([\w\-]+)/', $profileIcon, $matches );
                                 $iconClass = is_array( $matches ) && ! empty( $matches[1] ) ? $matches[1] . '-original' : '';
@@ -335,8 +336,9 @@
                         <i
                             class="hvr-icon eb-social-share-icon								                                        <?php echo esc_attr( $profileIcon ); ?>"></i>
                         <?php
-                                if ( ! empty( $showTitle && ! empty( $profile['iconText'] ) ) ) {?>
-                        <span class="eb-social-share-text"><?php echo esc_html( $profile['iconText'] ); ?></span>
+                                $iconText = isset( $profile['iconText'] ) && is_scalar( $profile['iconText'] ) ? (string) $profile['iconText'] : '';
+                                if ( $showTitle && '' !== $iconText && '0' !== $iconText ) {?>
+                        <span class="eb-social-share-text"><?php echo esc_html( $iconText ); ?></span>
                         <?php }?>
                     </a>
                 </li>

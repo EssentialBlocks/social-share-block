@@ -106,11 +106,9 @@ Yes, it will work with any standard WordPress theme.
 
 == Changelog ==
 
-= 2.1.1 - 19/10/2026 =
-* Security: Hardened block style generation
-* Fixed: Animation stylesheet replaced with animate.css 3.7.2 (MIT licence)
-* Removed: Unused `_eb_attr` post meta registration
-* Added: External services section documenting Google Fonts
+= 2.1.1 - 26/10/2026 =
+* Improved: Security enhancements
+* Few minor bug fixes & improvements
 
 = 2.1.0 - 30/08/2026 =
 * Fixed: PHP 8.0 - 8.5 compatibility issues

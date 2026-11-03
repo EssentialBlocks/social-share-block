@@ -146,6 +146,13 @@ export default function SocialProfiles({
         padding: 0px 5px;
       }
 
+      li.drag-helper .profile-icon-container .dashicons{
+        width: 14px;
+        height: 14px;
+        font-size: 14px;
+        vertical-align: text-bottom;
+      }
+
       .socialBarsLabel{
         display:block;
         padding: 15px 0 5px;
@@ -155,10 +162,15 @@ export default function SocialProfiles({
 
       `}</style>
 
+            {/*
+              * This picker only adds a new item, so it always shows the "+" placeholder.
+              * It used to take `selectedIcon` as its value, which made it display the icon just
+              * added (or the item last clicked in the list) as if picking would replace it.
+              */}
             <EBIconPicker
                 // icons={{ fontAwesome: iconList }}
                 // disableDashicon={true}
-                value={selectedIcon || null}
+                value={null}
                 onChange={onSelectIcon}
                 title={__("Social Media", "essential-blocks")}
             />

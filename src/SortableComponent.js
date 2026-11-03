@@ -33,7 +33,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { TextControl, ToggleControl } from "@wordpress/components";
 
-const { ColorControl } = window.EBSocialShareControls;
+const { ColorControl, EBDisplayIcon } = window.EBSocialShareControls;
 
 import { __ } from "@wordpress/i18n";
 
@@ -137,8 +137,16 @@ const SortableItem = ({
 					className="profile-icon-container"
 					onClick={() => onProfileClick(profile.icon)}
 				>
-					<span className={`${profile.icon}`} />
-					<span className="selected-profile-icon">{profile.icon}</span>
+					{/*
+					  * EBDisplayIcon, not a bare `<span className={icon}>`: a Dashicon is stored as
+					  * just `dashicons-<name>` and needs the `dashicons` base class to draw, which
+					  * this component adds. Same component the canvas preview uses.
+					  */}
+					<EBDisplayIcon icon={profile.icon} />
+					{/* The item's own Text once the author has given one; the icon class until then. */}
+					<span className="selected-profile-icon">
+						{profile.iconText || profile.icon}
+					</span>
 				</span>
 				<DragHandle
 					attributes={attributes}

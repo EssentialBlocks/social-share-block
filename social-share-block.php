@@ -143,7 +143,10 @@
         wp_register_style(
             'eb-social-share-block-editor-style',
             plugins_url( $editor_css, __FILE__ ),
-            [ 'fontpicker-default-theme', 'fontpicker-matetial-theme', 'essential-blocks-hover-css' ],
+            // `dashicons` is listed so it is printed into the iframed editor canvas, which does
+            // not inherit the admin page's stylesheets. Without it a Dashicon picked for an item
+            // renders as an empty button in the editor.
+            [ 'fontpicker-default-theme', 'fontpicker-matetial-theme', 'essential-blocks-hover-css', 'dashicons' ],
             file_exists( $editor_css_path ) ? filemtime( $editor_css_path ) : SOCIAL_SHARE_BLOCKS_VERSION
         );
 
@@ -282,8 +285,23 @@
                                 $profile     = is_array( $profile ) ? $profile : [];
                                 $profileIcon = isset( $profile['icon'] ) && is_scalar( $profile['icon'] ) ? (string) $profile['icon'] : '';
                                 $matches     = [];
-                                preg_match( '/fa-([\w\-]+)/', $profileIcon, $matches );
+                                preg_match( '/(?:fa|dashicons)-([\w\-]+)/', $profileIcon, $matches );
                                 $iconClass = is_array( $matches ) && ! empty( $matches[1] ) ? $matches[1] . '-original' : '';
+
+                                /**
+                                 * The icon picker stores a Dashicon as just `dashicons-<name>`, but the
+                                 * glyph only renders with the `dashicons` base class (it sets the font)
+                                 * and the `dashicons` stylesheet, which WordPress loads on the frontend
+                                 * only for logged-in users. Add both, so the icon shows for every visitor.
+                                 */
+                                if ( false !== strpos( $profileIcon, 'dashicons-' ) ) {
+                                    if ( ! preg_match( '/(^|\s)dashicons(\s|$)/', $profileIcon ) ) {
+                                        $profileIcon = 'dashicons ' . $profileIcon;
+                                    }
+                                    if ( ! is_admin() ) {
+                                        wp_enqueue_style( 'dashicons' );
+                                    }
+                                }
 
                                 /**
                                  * An override link entered on the item wins; otherwise fall back to

@@ -11,7 +11,7 @@ export default function socialLinks({ profilesOnly, icnEffect, showTitle }) {
 			{profilesOnly.map(({ icon, iconText }, index) => (
 				<li key={index}>
 					<a
-						className={`${((icon || " ").match(/fa-([\w\-]+)/i) || [" ", " "])[1]
+						className={`${((icon || " ").match(/(?:fa|dashicons)-([\w\-]+)/i) || [" ", " "])[1]
 							}-original ${icnEffect || " "}`}
 						rel="noopener"
 					>

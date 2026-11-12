@@ -106,7 +106,7 @@ class Social_Share_Helper
 
 
             wp_enqueue_style(
-                'essential-blocks-editor-css',
+                'social-share-block-controls-css',
                 SOCIAL_SHARE_BLOCKS_ADMIN_URL . 'dist/modules.css',
                 array('essential-blocks-iconpicker-css','fontawesome-frontend-css'),
                 $controls_version,

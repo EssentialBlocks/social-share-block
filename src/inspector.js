@@ -3,6 +3,7 @@
  */
 import { __ } from "@wordpress/i18n";
 import { useEffect } from "@wordpress/element";
+import { isEqual } from "lodash";
 import { InspectorControls } from "@wordpress/block-editor";
 import {
     PanelBody,
@@ -85,7 +86,11 @@ function Inspector({ attributes, setAttributes }) {
             ...item,
             isExpanded: false,
         }));
-        setAttributes({ socialDetails: newSclDtails });
+        // Spread copies are never `===` the stored items, so an unconditional write
+        // marks the post dirty just for selecting the block.
+        if (!isEqual(newSclDtails, socialDetails)) {
+            setAttributes({ socialDetails: newSclDtails });
+        }
     }, []);
 
     const resRequiredProps = {

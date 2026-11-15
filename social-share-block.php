@@ -246,7 +246,7 @@
         $iconShape    = is_string( $attributes['iconShape'] ?? null ) ? $attributes['iconShape'] : '';
 
     ?>
-<div<?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes this. ?>>
+<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes this. ?>>
     <?php
         /**
          * Marker class so the stylesheet can exempt a floating bar from the scroll-reveal
